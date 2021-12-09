@@ -6,7 +6,7 @@ The collaboration of the team is managed by SRAM. Only active members of SRAM ca
 
 Functional the mount process will look like this:
 
-```plantuml
+
 ![assets/overall.iuml](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/HarryKodden/encrypted-mounting/main/assets/overall.iuml)
 
 TO BE COMPLETED
