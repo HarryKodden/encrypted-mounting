@@ -1,0 +1,12 @@
+@startuml
+actor Researcher as user
+database data as data
+participant SRAM as sram
+participant IDP as idp
+user --> data: Mount volume
+data --> sram: Enforce authentication
+idp --> user: Authenticate !
+user --> idp: Logon
+idp --> sram: OK
+sram --> user: Volume mounted !
+@enduml

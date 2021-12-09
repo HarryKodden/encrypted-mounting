@@ -6,14 +6,7 @@ The collaboration of the team is managed by SRAM. Only active members of SRAM ca
 Functional the mount process will look like this:
 
 ```plantuml
-actor Researcher as user
-database data as data
-participant SRAM as sram
-participant IDP as idp
-user --> data: Mount volume
-data --> sram: Enforce authentication
-idp --> user: Authenticate !
-user --> idp: Logon
-idp --> sram: OK
-sram --> user: Volume mounted !
+!include assets/overall.iuml
 ```
+
+TO BE COMPLETED

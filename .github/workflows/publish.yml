@@ -16,7 +16,7 @@ jobs:
           REPO_URL="https://raw.github.com/$GITHUB_REPOSITORY/main"
           for f in *.md;
           do
-            sed '/./{H;$!d;} ; x ; s/```plantuml//; s/``` $//; s~\!include \(.*\)\n~!\[\1\]\(%PLANT_URL%\&src=%REPO_URL%/\1\)~g' $f > $f.tmp;
+            sed '/./{H;$!d;} ; x ; s/```plantuml$//; s/```$//; s~\!include \(.*\)\n~!\[\1\]\(%PLANT_URL%\&src=%REPO_URL%/\1\)~g' $f > $f.tmp;
             sed -e "s#%PLANT_URL%#$PLANT_URL#g; s#%REPO_URL%#$REPO_URL#g" $f.tmp > $f;
             rm $f.tmp;
           done
