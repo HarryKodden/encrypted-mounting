@@ -58,7 +58,10 @@ password = < hash of encryption key >
 
 (1) This WebDav endpoint will be a HTTPS secured endpoint. The webDav storage available to the user will be the 'encrypted rclone remote backend' exclusively.
 
-User access is granted via Basic Authentication (combination userid/password). The User has to retrieve his personal credentials via the separate flow accessing his personal wallet.
+User access is granted via Basic Authentication (combination userid/password). The User has to retrieve his personal credentials via the separate flow accessing his personal wallet. (*)
 His wallet is only accessible after succesfull SRAM authentication.
 
 Using credentials like userid/password allows mounting the webDav endpoint via standard Mac- and Windows Finders.
+
+(*) Please note: The credentials used by the end-user to authenticate to the webDav is independent of the encryption key used to encrypt/decrypt the data on the storage backend.
+
