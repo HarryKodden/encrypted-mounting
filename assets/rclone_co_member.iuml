@@ -1,0 +1,4 @@
+@startuml
+actor CO_member
+CO_member --> portal: Access webDav endpoint (1)
+@enduml
