@@ -1,0 +1,9 @@
+
+@startuml
+actor CO_admin
+CO_admin --> portal: Register storage backend in rclone config
+portal --> portal: generate encryption key
+portal --> Vault: Store encryption key (1)
+portal --> portal: create rclone config (2)
+portal --> portal: Adjust apache config (3)
+@enduml

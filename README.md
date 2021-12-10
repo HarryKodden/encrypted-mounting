@@ -15,14 +15,8 @@ Functional the mount process will look like this:
 
 ## rClone + webDav
 
- 
-actor CO_admin
-CO_admin --> portal: Register storage backend in rclone config
-portal --> portal: generate encryption key
-portal --> Vault: Store encryption key (1)
-portal --> portal: create rclone config (2)
-portal --> portal: Adjust apache config (3)
 
+![assets/rclone_co_admin.iuml](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/HarryKodden/encrypted-mounting/main/assets/rclone_co_admin.iuml)
 
 (1) The used encryption key is stored in Vault and used for:
 * (re-)generate rclone config
@@ -52,11 +46,10 @@ password = < hash of encryption key >
 (3) The Apache config added to the portal offers a webDav url to access the rclone encrypted remote backend
 
 
- 
-actor CO_member
-CO_member --> portal: Access webDav endpoint
-``` 
 
-## Proof of Concept
+![assets/rclone_co_member.iuml](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/HarryKodden/encrypted-mounting/main/assets/rclone_co_member.iuml)``` 
 
-< TO BE COMPLETED >
+(1) This WebDav endpoint will be a HTTPS secured endpoint end access is granted via user specific credentials (combination userid/password). The User has to retrieve his personal credentials via the separate flow accessing his personal wallet.
+His wallet is only accessible after succesfull SRAM authentication.
+
+Using credentials like userid/password allows mounting the webDav endpoint via standard Mac- and Windows Finders.
