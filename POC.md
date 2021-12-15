@@ -184,7 +184,7 @@ config = [
 
 Then all components would also be generated for instance **sample_2** resulting in 2 WebDav endponts/
 
-**https://demo.example.org/webdav/sample**
-**https://demo.example.org/webdav/sample_2**
+* **https://demo.example.org/webdav/sample**
+* **https://demo.example.org/webdav/sample_2**
 
 Off course this could be referencing a complete different storage backend, differten SRAM audience group, different encryption key etc.
