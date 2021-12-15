@@ -5,6 +5,10 @@ In his Proof of Concept the objective is to demonstrate a full integration of rC
 
 ## Config - Sample content...
 
+For setting up the demonstration environment, we need some kind of configuration. In the future this configuration could be the result of an administrative web function in which the administrator can enter these variables. The resulting configuration could be stored for example as a secret on the Vault Server.
+
+For now, this config is just a JSON dictionary. A Python script reads this configuration and generates all the necessary configution components.
+
 ```config
 config = [
         {
@@ -21,7 +25,7 @@ config = [
         'network': 'localnet'
     }
 ]
-
+```
 
 Based on this config, several config files are generated.
 
@@ -58,7 +62,7 @@ pass = ...undisclosed...
 type = crypt
 remote = storage:
 password = ...undisclosed: <encryption_secret>...
-
+```
 
 # Generated: sample\\docker.conf
 
@@ -92,7 +96,7 @@ networks:
   internal:
     external:
       name: localnet
-
+```
 
 # Generated: sample\\pam.conf
 
@@ -101,7 +105,7 @@ networks:
 
 auth sufficient pam_python.so /usr/local/bin/vault-pam-wallet.py url=https://vault.example.org service=surfresearch.sram_demo.testje
 account required pam_permit.so
-
+```
 
 
 # Generated: sample\apache.conf
@@ -119,7 +123,7 @@ account required pam_permit.so
     ProxyPass http://sample:8080/$1
     ProxyPassReverse http://sample:8080/$1
 </LocationMatch>
-
+```
 
 # Generated: sample\start.sh
 
@@ -137,7 +141,7 @@ docker cp _web_.conf portal:/etc/apache2/webdav/sample.conf
 
 # reload apache to activation changes...
 docker exec portal apachectl -k graceful
-
+```
 
 # Generated: sample\stop.sh
 
@@ -155,7 +159,7 @@ docker exec portal apachectl -k graceful
 
 # stop rclone container !
 docker-compose -f _compose_.conf down -v
-
+```
 
 # Result
 

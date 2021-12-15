@@ -6,8 +6,8 @@ The collaboration of the team is managed by SRAM. Only active members of SRAM ca
 
 Functional the mount process will look like this:
 
-
-![assets/overall.iuml](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/HarryKodden/encrypted-mounting/main/assets/overall.iuml)
+```plantuml
+![assets/overall.iuml](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/HarryKodden/encrypted-mounting/main/assets/overall.iuml)```
 
 ## Identified solutions
 
@@ -52,7 +52,7 @@ password = < hash of encryption key >
 ### Using a storage backed (Read/Write encrypted only)
 
 
-![assets/rclone_co_member.iuml](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/HarryKodden/encrypted-mounting/main/assets/rclone_co_member.iuml)``` 
+![assets/rclone_co_member.iuml](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/HarryKodden/encrypted-mounting/main/assets/rclone_co_member.iuml)~~~ 
 
 (1) This WebDav endpoint will be a HTTPS secured endpoint. The webDav storage available to the user will be the 'encrypted rclone remote backend' exclusively.
 
