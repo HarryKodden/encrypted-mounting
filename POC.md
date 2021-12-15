@@ -134,10 +134,10 @@ account required pam_permit.so
 docker-compose -f docker.conf up -d
 
 # install the PAM config
-docker cp _pam_.conf portal:/etc/pam.d/sample
+docker cp pam.conf portal:/etc/pam.d/sample
 
 # install the Apache location endpoint
-docker cp _web_.conf portal:/etc/apache2/webdav/sample.conf
+docker cp apache.conf portal:/etc/apache2/webdav/sample.conf
 
 # reload apache to activation changes...
 docker exec portal apachectl -k graceful
@@ -158,10 +158,10 @@ docker exec portal rm /etc/apache2/webdav/sample.conf
 docker exec portal apachectl -k graceful
 
 # stop rclone container !
-docker-compose -f _compose_.conf down -v
+docker-compose -f docker.conf down -v
 ```
 
 # Result
 
 Users can mount to **https://example.org/webdav/sample** and authenticate using their SRAM username and a password that matches his personal secret for this group **surfresearch.sram_demo.testje**.
-The user can retrieve this secret by visiting his wallet at **https://vault.example.org/wellet**
+The user can retrieve this secret by visiting his wallet at **https://vault.example.org/wallet**
