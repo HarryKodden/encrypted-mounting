@@ -63,5 +63,8 @@ His wallet is only accessible after succesfull SRAM authentication.
 
 Using credentials like userid/password allows mounting the webDav endpoint via standard Mac- and Windows Finders.
 
-(*) Please note: The credentials used by the end-user to authenticate to the webDav is independent of the encryption key used to encrypt/decrypt the data on the storage backend.
+(*) Please note: The credentials used by the end-user to authenticate to the webDav is independent of the encryption key used to encrypt/decrypt the data on the storage bac
 
+# Proof Of Concept
+
+During a [POC](./POC.md) excercise the functionality is demonstrated.
