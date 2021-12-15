@@ -7,7 +7,7 @@ In his Proof of Concept the objective is to demonstrate a full integration of rC
 
 For setting up the demonstration environment, we need some kind of configuration. In the future this configuration could be the result of an administrative web function in which the administrator can enter these variables. The resulting configuration could be stored for example as a secret on the Vault Server.
 
-For now, this config is just a JSON dictionary. A Python script reads this configuration and generates all the necessary configution components.
+For now, this config is just a JSON dictionary. A Python script reads this configuration and generates all the necessary configuration components.
 
 ```config
 config = [
@@ -163,5 +163,5 @@ docker-compose -f docker.conf down -v
 
 # Result
 
-Users can mount to **https://example.org/webdav/sample** and authenticate using their SRAM username and a password that matches his personal secret for this group **surfresearch.sram_demo.testje**.
+Users can mount to **https://demo.example.org/webdav/sample** and authenticate using their SRAM username and a password that matches his personal secret for this group **surfresearch.sram_demo.testje**.
 The user can retrieve this secret by visiting his wallet at **https://vault.example.org/wallet**
