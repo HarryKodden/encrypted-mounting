@@ -17,9 +17,9 @@ Functional the mount process will look like this:
 
 ### Registering a Storage backend
 
-```plantuml
+~~~plantuml
 !include assets/rclone_co_admin.iuml
-```
+~~~
 
 (1) The used encryption key is stored in Vault and used for:
 * (re-)generate rclone config
@@ -52,9 +52,9 @@ password = < hash of encryption key >
 
 ### Using a storage backed (Read/Write encrypted only)
 
-```plantuml
+~~~plantuml
 !include assets/rclone_co_member.iuml
-``` 
+~~~ 
 
 (1) This WebDav endpoint will be a HTTPS secured endpoint. The webDav storage available to the user will be the 'encrypted rclone remote backend' exclusively.
 

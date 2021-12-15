@@ -4,6 +4,10 @@ In his Proof of Concept the objective is to demonstrate a full integration of rC
 
 ## Config - Sample content...
 
+For setting up the demonstration environment, we need some kind of configuration. In the future this configuration could be the result of an administrative web function in which the administrator can enter these variables. The resulting configuration could be stored for example as a secret on the Vault Server.
+
+For now, this config is just a JSON dictionary. A Python script reads this configuration and generates all the necessary configution components.
+
 ```config
 config = [
         {
