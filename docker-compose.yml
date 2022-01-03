@@ -1,0 +1,111 @@
+version: '3'
+
+services:
+
+  rclone:
+    build: rclone
+    container_name: rclone
+    volumes:
+      - mounts:/etc/mounts
+      - cache:/cache
+      - /mnt:/mnt:shared
+    environment:
+      - SERVER_URL=https://mount.${DOMAIN}
+      - VAULT_ADDR=${VAULT_ADDR}
+      - VAULT_TOKEN=${VAULT_TOKEN}
+      - RCLONE_ADMIN_CONFIG=/etc/rclone.conf
+      - CACHE_DIR=/cache
+      - BASE_PATH=admin
+      - LOG_LEVEL=ERROR
+      - SRAM_WALLET_URL=${SRAM_WALLET_URL}
+      - SRAM_ADMIN_GROUP=${SRAM_ADMIN_GROUP}
+      - SRAN_USERS_GROUP=${SRAN_USERS_GROUP}
+    networks:
+      - internal
+    restart: unless-stopped
+    devices:
+      - /dev/fuse
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    command: 
+      - /bin/sh
+      - -c
+      - |
+        RC_USER=admin
+        RC_PASS=$$(cat /proc/sys/kernel/random/uuid)
+
+        rclone --config=$$RCLONE_ADMIN_CONFIG rcd --rc-user=$$RC_USER --rc-pass=$$RC_PASS --rc-web-gui --rc-no-auth --rc-baseurl=$$BASE_PATH --rc-addr=0.0.0.0:5572 &
+        
+        cat << EOF > /etc/mounts/admin
+        auth required pam_python.so /usr/local/bin/vault-pam-wallet.py url=$$SRAM_WALLET_URL debug service=$$SRAM_ADMIN_GROUP
+        account required pam_permit.so
+        EOF
+
+        cat << EOF > /etc/mounts/admin.conf
+
+        # Exclude stats from PAM authentication
+        location /$$BASE_PATH/core/stats {
+          proxy_set_header Authorization "Basic $$(echo -n "$$RC_USER:$$RC_PASS" | base64)";
+          proxy_pass http://rclone:5572;
+        }
+
+        location /$$BASE_PATH {  
+          auth_pam "Secure area";
+          auth_pam_service_name "admin";
+
+          # Selectively pass directly to rclone...
+          location ~ ^/$$BASE_PATH(?!(/api|/swaggerui|/config/(dump|get|create|update|delete|listremotes))) { 
+            proxy_set_header Authorization "Basic $$(echo -n "$$RC_USER:$$RC_PASS" | base64)";
+            proxy_pass http://rclone:5572;
+          }
+        
+          # Pass swagger endpoints
+          location ~ ^/$$BASE_PATH(/api/config|/api/doc|/api/swagger.json|/swaggerui) { 
+            proxy_pass http://rclone:80;
+          }
+
+          # These are the endpoints to intercept...
+          location ~ ^/$$BASE_PATH/config/(dump|get|create|update|delete|listremotes) {  
+            rewrite ^/$$BASE_PATH/config/(.*)\$$ /$$BASE_PATH/api/config/\$$1 break;
+            proxy_pass http://rclone:80;
+          }
+        }
+
+        EOF
+
+        python app.py
+
+  mount:
+    build: mount
+    container_name: mount
+    volumes:
+      - mounts:/etc/mounts
+    networks:
+      - internal
+      - external
+    extra_hosts:
+      - portal.${DOMAIN}:172.18.0.2
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mount.rule=Host(`mount.${DOMAIN}`)"
+      - "traefik.http.routers.mount.tls=true"
+      - "traefik.http.routers.mount.tls.certresolver=le"
+      - "traefik.http.routers.mount.entrypoints=https"
+      - "traefik.http.routers.mount.service=mount"
+      - "traefik.http.routers.mount.middlewares=restricted"
+      - "traefik.http.services.mount.loadbalancer.server.port=80"
+
+volumes:
+  mounts:
+  cache:
+
+networks:
+  internal:
+    external:
+      name: localnet
+  external:
+    external:
+      name: proxy
+
