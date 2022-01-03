@@ -1,0 +1,7 @@
+flask-restplus==0.13.0
+flask_httpauth
+Werkzeug==0.16.1
+requests
+flask-cors
+Flask
+pika
