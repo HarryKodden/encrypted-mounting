@@ -21,7 +21,7 @@ ADD proxy.conf /etc/nginx/proxy.conf
 ADD conf.d /etc/nginx/conf.d
 ADD vault-pam-wallet.py /usr/local/bin/
 
-RUN rm -f /etc/nginx/conf.d/default.conf
+RUN rm -f /etc/nginx/conf.d/default.conf /etc/nginx/sites-enabled/*
 
 COPY renew.sh /usr/local/bin/renew.sh
 RUN chmod a+x /usr/local/bin/renew.sh

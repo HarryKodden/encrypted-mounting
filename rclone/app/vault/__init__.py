@@ -169,23 +169,20 @@ class rClone(object):
 
         self.start_mount(name)
 
+    def dump(self):
+        return self.mounts()
+
     def get_config(self, filename):
-        log.info("[GET CONFIG] {}".format(filename))
 
         config = configparser.ConfigParser()
 
-        dump = self.mounts()
-
-        for name, details in dump.items():
+        for name, details in self.dump().items():
             config[name] = details
 
         with open(filename, 'w') as f:
             config.write(f)
 
-        return dump
-
     def put_config(self, filename):
-        log.info("[PUT CONFIG] {}".format(filename))
 
         config = configparser.ConfigParser()
         config.read(filename)

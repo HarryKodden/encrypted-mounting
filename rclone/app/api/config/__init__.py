@@ -32,7 +32,7 @@ class Config(Resource):
         """
         dump config from Vault
         """
-        return my_rclone.get_config(settings.RCLONE_ADMIN_CONFIG)
+        return my_rclone.dump()
 
 
 mount_config = api.model('mount_config', {
