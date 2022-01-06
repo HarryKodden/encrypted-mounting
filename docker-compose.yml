@@ -16,7 +16,7 @@ services:
       - RCLONE_ADMIN_CONFIG=/etc/rclone.conf
       - CACHE_DIR=/cache
       - BASE_PATH=admin
-      - LOG_LEVEL=ERROR
+      - LOG_LEVEL=DEBUG
       - SRAM_WALLET_URL=${SRAM_WALLET_URL}
       - SRAM_ADMIN_GROUP=${SRAM_ADMIN_GROUP}
       - SRAN_USERS_GROUP=${SRAN_USERS_GROUP}
@@ -38,7 +38,7 @@ services:
 
         rclone --config=$$RCLONE_ADMIN_CONFIG rcd --rc-user=$$RC_USER --rc-pass=$$RC_PASS --rc-web-gui --rc-no-auth --rc-baseurl=$$BASE_PATH --rc-addr=0.0.0.0:5572 &
         
-        cat << EOF > /etc/mounts/admin
+        cat << EOF > /etc/mounts/admin.pam
         auth required pam_python.so /usr/local/bin/vault-pam-wallet.py url=$$SRAM_WALLET_URL debug service=$$SRAM_ADMIN_GROUP
         account required pam_permit.so
         EOF
