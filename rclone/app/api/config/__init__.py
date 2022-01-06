@@ -180,7 +180,7 @@ class Import(ListRemotes):
         args = file_upload.parse_args()
 
         try:
-            # During import, we could have race condition, therefor make filename usinque !
+            # During import, we could have race condition, therefor make filename unique !
             dir = '/tmp'
             file = str(uuid.uuid4())
             args['rclone_config_file'].save(dir+'/'+file)
