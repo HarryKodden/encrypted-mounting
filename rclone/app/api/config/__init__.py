@@ -170,7 +170,7 @@ class Export(Config):
             os.remove(dir+'/'+file)
 
 @ns.route('/import', methods=['POST'])
-class Import(Config):
+class Import(ListRemotes):
 
     @api.expect(file_upload)
     def post(self):
@@ -190,4 +190,5 @@ class Import(Config):
         finally:
             os.remove(dir+'/'+file)
 
-        return "OK !"
+        # Will show resulting remotes after import
+        return super().post()

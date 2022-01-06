@@ -190,10 +190,16 @@ class rClone(object):
         for name in config.sections():
             self.write(name, config[name])
 
-    def hash_mount_filename(self, name):
+    def md5_mount_filename(self, name):
         return '/usr/local/etc/'+name+'.md5'
 
-    def hash_mount_digest(self, name):
+    def web_mount_filename(self, name):
+        return '/etc/mounts/'+name+'.conf'
+
+    def pam_mount_filename(self, name):
+        return '/etc/mounts/'+name+'.pam'
+
+    def md5_mount_digest(self, name):
         try:
             details = self.read(name)
 
@@ -220,8 +226,17 @@ class rClone(object):
             log.info('Stopping process: {}'.format(pid))
             run(['kill', '{}'.format(pid)])
 
-            log.info('Remove hashfile: {}'.format(self.hash_mount_filename(name)))
-            run(['rm', '{}'.format(self.hash_mount_filename(name))])
+            os.remove(self.md5_mount_filename(name))
+            os.remove(self.pam_mount_filename(name))
+
+            with open(self.web_mount_filename(name), 'w') as f:
+                f.write(f"""
+                    location /webdav/{name}/ {{  
+                        root /usr/share/nginx/html;
+                        internal;                    
+                    }}
+                    """
+                )
 
         except Exception as e:
             log.error("Error during stopping: {}: {}".format(name, str(e)))
@@ -255,12 +270,8 @@ class rClone(object):
         with open(CONF_PATH+'/'+name+'.conf', 'w') as f:
             config.write(f)
 
-        with open(CONF_PATH+'/'+name+'.conf', 'r') as f:
-            data = f.read() 
-            log.info('\n\n'+data)
-
-        md5_file = self.hash_mount_filename(name)
-        md5_new = self.hash_mount_digest(name)
+        md5_file = self.md5_mount_filename(name)
+        md5_new = self.md5_mount_digest(name)
 
         if md5_new and os.path.exists(md5_file):
             with open(md5_file, 'r') as f:
@@ -289,7 +300,7 @@ class rClone(object):
                 '--vfs-cache-mode', 'full'
             ])
 
-            with open('/etc/mounts/'+name+'.conf', 'w') as f:
+            with open(self.web_mount_filename(name), 'w') as f:
                 f.write(f"""
                     location /webdav/{name}/ {{  
                         auth_pam "Secure area";
@@ -302,7 +313,7 @@ class rClone(object):
                     """
                 )
 
-            with open('/etc/mounts/'+name, 'w') as f:
+            with open(self.pam_mount_filename(name), 'w') as f:
                 f.write(
                     "auth required pam_python.so "
                     "/usr/local/bin/vault-pam-wallet.py "
