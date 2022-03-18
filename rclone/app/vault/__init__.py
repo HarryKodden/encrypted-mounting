@@ -31,23 +31,25 @@ def find_free_port():
         return s.getsockname()[1]
 
 vault_default_headers = {
-    "X-Vault-Token": None,
+    "X-Vault-Token": settings.VAULT_TOKEN,
     "Content-Type": "application/json"
 }
 
 class Vault(object):
 
     def __init__(self):
-        (rc, data) = self.api(
-            "/v1/auth/userpass/login/{}".format(settings.VAULT_USER),
-            method="POST",
-            payload={ "password": settings.VAULT_PASS },
-            headers={ "Content-Type": "application/json" }
-        )
+        global vault_default_headers
 
-        if rc == 200:
-            global vault_default_headers
-            vault_default_headers["X-Vault-Token"] = json.loads(data)['auth']['client_token']
+        if not vault_default_headers['X-Vault-Token']:
+            (rc, data) = self.api(
+                "/v1/auth/userpass/login/{}".format(settings.VAULT_USER),
+                method="POST",
+                payload={ "password": settings.VAULT_PASS },
+                headers={ "Content-Type": "application/json" }
+            )
+
+            if rc == 200:
+                vault_default_headers["X-Vault-Token"] = json.loads(data)['auth']['client_token']
 
     def api(self, uri, method="GET", payload={}, headers=vault_default_headers):
         url = "{}{}".format(settings.VAULT_ADDR, uri)
