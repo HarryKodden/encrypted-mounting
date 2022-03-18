@@ -14,10 +14,6 @@ from requests import request
 
 log = logging.getLogger(__name__)
 
-vault_default_headers = {
-        "X-Vault-Token": settings.VAULT_TOKEN,
-        "Content-Type": "application/json"
-}
 
 CIPHER = 'CIPHER'
 CONF_PATH = '/usr/local/etc'
@@ -34,18 +30,37 @@ def find_free_port():
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         return s.getsockname()[1]
 
-def api(uri, method="GET", payload={}, headers=vault_default_headers):
-    url = "{}{}".format(settings.VAULT_ADDR, uri)
-    log.debug("[VAULT] URL: {}".format(url))
-    
-    if payload:
-        log.debug("[VAULT] DATA: {}".format(pretty(payload)))
+vault_default_headers = {
+    "X-Vault-Token": None,
+    "Content-Type": "application/json"
+}
 
-    response = request(method, url, json=payload, headers=headers)
+class Vault(object):
 
-    log.debug(pretty(response.text))
-    
-    return response.status_code, response.text
+    def __init__(self):
+        (rc, data) = self.api(
+            "/v1/auth/userpass/login/{}".format(settings.VAULT_USER),
+            method="POST",
+            payload={ "password": settings.VAULT_PASS },
+            headers={ "Content-Type": "application/json" }
+        )
+
+        if rc == 200:
+            global vault_default_headers
+            vault_default_headers["X-Vault-Token"] = json.loads(data)['auth']['client_token']
+
+    def api(self, uri, method="GET", payload={}, headers=vault_default_headers):
+        url = "{}{}".format(settings.VAULT_ADDR, uri)
+        log.debug("[VAULT] URL: {}".format(url))
+        
+        if payload:
+            log.debug("[VAULT] DATA: {}".format(pretty(payload)))
+
+        response = request(method, url, json=payload, headers=headers)
+
+        log.debug(pretty(response.text))
+        
+        return response.status_code, response.text
 
 def run(cmd):
 
@@ -89,9 +104,10 @@ def pipe(cmds):
 def spawn(cmd):
     p = subprocess.Popen(cmd, start_new_session=True)
         
-class rClone(object):
+class rClone(Vault):
 
     def __init__(self):
+        super().__init__()
         self.start()
 
     def mounts(self, cipher=False):
@@ -99,7 +115,7 @@ class rClone(object):
 
         result = {}
 
-        (rc, data) = api(
+        (rc, data) = self.api(
             "/v1/secret/metadata/mounts",
             method="LIST"
         )
@@ -118,7 +134,7 @@ class rClone(object):
 
         self.stop_mount(name)
 
-        (rc, _) = api(
+        (rc, _) = self.api(
             "/v1/secret/data/mounts/{}".format(name), 
             method='DELETE'
         )
@@ -130,7 +146,7 @@ class rClone(object):
     def read(self, name, cipher=False):
         log.info("[READ] {}".format(name))
 
-        (rc, data) = api(
+        (rc, data) = self.api(
             "/v1/secret/data/mounts/{}".format(name), 
             method='GET'
         )
@@ -158,7 +174,7 @@ class rClone(object):
         
         payload.update(config)
 
-        (rc, _) = api(
+        (rc, _) = self.api(
             "/v1/secret/data/mounts/{}".format(name), 
             method="POST", 
             payload={ 'data': payload }

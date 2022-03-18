@@ -12,7 +12,8 @@ services:
     environment:
       - SERVER_URL=https://mount.${DOMAIN}
       - VAULT_ADDR=${VAULT_ADDR}
-      - VAULT_TOKEN=${VAULT_TOKEN}
+      - VAULT_USER=${VAULT_USER}
+      - VAULT_PASS=${VAULT_PASS}
       - RCLONE_ADMIN_CONFIG=/etc/rclone.conf
       - CACHE_DIR=/cache
       - BASE_PATH=admin
@@ -36,6 +37,7 @@ services:
         RC_USER=admin
         RC_PASS=$$(cat /proc/sys/kernel/random/uuid)
 
+        touch $$RCLONE_ADMIN_CONFIG
         rclone --config=$$RCLONE_ADMIN_CONFIG rcd --rc-user=$$RC_USER --rc-pass=$$RC_PASS --rc-web-gui --rc-no-auth --rc-baseurl=$$BASE_PATH --rc-addr=0.0.0.0:5572 &
         
         cat << EOF > /etc/mounts/admin.pam
@@ -46,8 +48,7 @@ services:
         cat << EOF > /etc/mounts/admin.conf
 
         # Exclude stats from PAM authentication
-        location /$$BASE_PATH/core/stats {
-          proxy_set_header Authorization "Basic $$(echo -n "$$RC_USER:$$RC_PASS" | base64)";
+        location /$$BASE_PATH/core/stats {proxy_set_header Authorization "Basic $$(echo -n "$$RC_USER:$$RC_PASS" | base64)";
           proxy_pass http://rclone:5572;
         }
 
