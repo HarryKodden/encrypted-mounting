@@ -23,7 +23,8 @@ RESTPLUS_ERROR_404_HELP = False
 
 # Vault settings
 VAULT_ADDR = os.environ.get('VAULT_ADDR', 'http://localhost:8200')
-VAULT_TOKEN = os.environ.get('VAULT_TOKEN', '?')
+VAULT_USER = os.environ.get('VAULT_USER', 'admin')
+VAULT_PASS = os.environ.get('VAULT_PASS', 'secret')
 
 # RClone Config
 RCLONE_ADMIN_CONFIG = os.environ.get('RCLONE_ADMIN_CONFIG', '/etc/rclone.conf')
