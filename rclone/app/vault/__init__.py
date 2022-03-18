@@ -259,6 +259,8 @@ class rClone(Vault):
         except Exception as e:
             log.error("Error during stopping: {}: {}".format(name, str(e)))
     
+        self.flush_config()
+
     def start_mount(self, name):
 
         try:
@@ -342,7 +344,18 @@ class rClone(Vault):
 
         except Exception as e:
             log.error("Error during starting: {}: {}".format(name, str(e)))
+
+        self.flush_config()
     
+    def flush_config(self):
+        config = configparser.ConfigParser()
+
+        for name, details in self.dump().items():
+            config[name] = details
+
+        with open(settings.RCLONE_ADMIN_CONFIG, 'w') as f:
+            config.write(f)
+
     def stop(self):
         for name in self.mounts().keys():
             self.stop_mount(name)
