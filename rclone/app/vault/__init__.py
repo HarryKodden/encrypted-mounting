@@ -15,7 +15,8 @@ from requests import request
 log = logging.getLogger(__name__)
 
 
-CIPHER = 'CIPHER'
+CIPHER = 'cipher'
+PATH = 'path'
 CONF_PATH = '/usr/local/etc'
 
 def pretty(data):
@@ -145,7 +146,7 @@ class rClone(Vault):
             raise Exception("status code: {}".format(rc))
 
 
-    def read(self, name, cipher=False):
+    def read(self, name, cipher=False, path=False):
         log.info("[READ] {}".format(name))
 
         (rc, data) = self.api(
@@ -160,6 +161,8 @@ class rClone(Vault):
 
         if not cipher:
             data.pop(CIPHER, None)
+        if not path:
+            data.pop(PATH, None)
 
         return data
 
@@ -173,6 +176,8 @@ class rClone(Vault):
 
         if CIPHER not in payload:
             payload[CIPHER] = str(uuid.uuid4())
+        if PATH not in payload:
+            payload[PATH] = str(uuid.uuid4())
         
         payload.update(config)
 
@@ -264,7 +269,7 @@ class rClone(Vault):
     def start_mount(self, name):
 
         try:
-            details = self.read(name, cipher=True)
+            details = self.read(name, cipher=True, path=True)
         except:
             self.stop(name)
             return
@@ -273,12 +278,13 @@ class rClone(Vault):
 
         try:
             password = run(['rclone', 'obscure', details.pop(CIPHER, None)])
+            path = details.pop(PATH, 'encrypted')
 
             config[name+'_src'] = details
 
             config[name] = {
                 'type': 'crypt',
-                'remote': name+'_src:encrypted', 
+                'remote': name+'_src:'+path, 
                 'password': password,
                 'filename_encryption': 'off',
                 'directory_name_encryption': 'false'
