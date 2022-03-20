@@ -1,0 +1,23 @@
+{
+   "ui": "{{ vault_ui }}",
+   "max_lease_ttl": "{{ vault_max_lease_ttl }}",
+   "default_lease_ttl": "{{ vault_default_lease_ttl }}",
+   "backend": [
+      {
+         "file": {
+            "path": "/vault/file"
+         }
+      }
+   ],
+   "listener": [
+      {
+         "tcp": {
+            "address": "0.0.0.0:8200",
+            "tls_disable":  "{{ vault_tls_disable }}",
+            "proxy_protocol_behavior": "use_always"
+          }
+      }
+   ],
+   "api_addr": "http://0.0.0.0:8200",
+   "disable_clustering": "{{vault_disable_clustering }}"
+}

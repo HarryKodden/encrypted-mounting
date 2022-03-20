@@ -1,0 +1,4 @@
+---
+sram_url: "https://sram.surf.nl"
+sram_admin_service_bearer_token: "{{ lookup('../.env','ADMIN_BEARER_TOKEN') }}"
+sram_users_service_bearer_token: "{{ lookup('../.env','USERS_BEARER_TOKEN') }}"

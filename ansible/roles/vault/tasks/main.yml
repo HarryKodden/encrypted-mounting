@@ -1,0 +1,75 @@
+---
+- include: install.yml
+
+- include: configure.yml
+
+- name: Stop vault
+  community.docker.docker_compose:
+    project_src: "{{ vault_directory }}"
+    stopped: yes
+  register: output
+
+#- name: Delete vault file...
+#  file:
+#    state: absent
+#    path: "{{ vault_directory }}/file"
+
+- name: start vault
+  community.docker.docker_compose:
+    project_src: "{{ vault_directory }}"
+    restarted: yes
+  register: output
+
+- name: Initialize vault
+  community.docker.docker_container_exec:
+    container: vault
+    command: "vault operator init -key-shares={{ vault_shares }} -key-threshold={{ vault_treshold }} -format json"
+  register: vault_init_results
+  ignore_errors: yes
+  
+- name: Parse output of vault init
+  set_fact:
+    vault_init_parsed: "{{ vault_init_results.stdout | from_json }}"
+  when: vault_init_results.failed == false
+
+- name: Write unseal keys to files
+  copy:
+    dest: "{{ vault_directory }}/etc/unseal_key_{{ item.0 }}"
+    content: "{{ item.1 }}"
+  with_indexed_items: "{{ vault_init_parsed.unseal_keys_hex }}"
+  when: vault_init_results.failed == false
+
+- name: Write root token to file
+  copy:
+    content: "{{ vault_init_parsed.root_token }}"
+    dest: "{{ vault_directory }}/etc/rootkey"
+  when: vault_init_results.failed == false
+
+- name: Reading unseal key contents
+  command: "cat {{ vault_directory }}/etc/unseal_key_{{ item }}"
+  register: unseal_keys
+  with_sequence: start=1 end={{ vault_treshold }}
+
+- name: Unseal vault
+  community.docker.docker_container_exec:
+    container: vault
+    command: "vault operator unseal {{ item.stdout }}"
+  with_items: "{{ unseal_keys.results }}"
+  ignore_errors: yes
+  register: output
+
+- name: Reading unseal key contents
+  command: "cat {{ vault_directory }}/etc/rootkey"
+  register: root_token
+
+- name: Set vault_token
+  set_fact:
+    vault_token: "{{ root_token.stdout }}"
+
+- name: Enable secret engine...
+  shell: "docker exec -e VAULT_TOKEN={{ vault_token }} vault vault secrets enable -version=2 -path=secret kv"
+  ignore_errors: yes
+
+#- name: Root token...
+#  ansible.builtin.debug:
+#    msg: "{{ vault_token }}"

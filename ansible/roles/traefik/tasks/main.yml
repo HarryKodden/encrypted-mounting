@@ -1,0 +1,15 @@
+---
+- include: install.yml
+
+- include: configure.yml
+
+- name: inspect traefik
+  docker_container_info:
+    name: traefik
+  register: traefik_container_details
+
+- name: get traefik IP address
+  set_fact:
+    traefik_ip_address: "{{ traefik_container_details | json_query(jmesquery) }}"
+  vars:
+    jmesquery: "container.NetworkSettings.Networks.{{ traefik_docker_external_network }}.IPAddress"

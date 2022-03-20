@@ -1,0 +1,33 @@
+---
+# Install
+traefik_version: "latest"
+traefik_directory: "/opt/traefik"
+
+# General settings
+traefik_domain: "traefik.{{ inventory_hostname }}"
+traefik_log_level: "ERROR"
+traefik_accesslog_enable: false
+
+# Main configuration
+traefik_global_https_redirect: true
+traefik_port_http: 80
+traefik_port_https: 443
+
+# Dashboard
+traefik_dashboard_enable: true
+traefik_dashboard_subdomain: "traefik"
+traefik_dashboard_basicauth_enable: true
+traefik_dashboard_basicauth_users: "{{ administrators }}"
+
+# Docker
+traefik_docker_enable: true
+traefik_docker_external_network: "external"
+traefik_docker_internal_network: "internal"
+traefik_docker_expose_by_default: false
+
+# Enable automatic certificates from Let's Encrypt
+traefik_acme_enable: true
+traefik_acme_email: "admin@{{ inventory_hostname }}"
+
+# Secrets...
+administrators: ["harry:$$apr1$$mfkWdJII$$VOyDAkJLbZFTVx8P18EdA/"]
