@@ -1,0 +1,24 @@
+---
+# Install
+vault_version: "latest"
+vault_directory: "/opt/vault"
+
+# General settings
+vault_domain: "vault.{{ inventory_hostname }}"
+vault_port: 8200
+vault_url: "https://{{ vault_domain }}"
+vault_log_level: "ERROR"
+vault_accesslog_enable: false
+vault_shares: 5
+vault_treshold: 3
+
+# Vault Config settings
+vault_ui: "true"
+vault_max_lease_ttl: "2160h"
+vault_default_lease_ttl: "2160h"
+vault_tls_disable: "true"
+vault_disable_clustering: "true"
+
+# Docker
+vault_docker_enable: true
+vault_docker_expose_by_default: false

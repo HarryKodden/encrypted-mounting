@@ -1,0 +1,7 @@
+---
+- name: start rclone
+  docker_compose:
+    state: present
+    project_src: "{{ rclone_directory }}"
+    restarted: yes
+    build: yes

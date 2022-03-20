@@ -1,0 +1,44 @@
+# {{ ansible_managed }}
+
+# General
+
+[log]
+  level = "{{ traefik_log_level }}"
+
+{% if traefik_accesslog_enable %}
+[accessLog]
+{% endif %}
+
+# Entrypoints
+
+[entryPoints.http]
+  address = ":{{ traefik_port_http }}"
+[entryPoints.https]
+  address = ":{{ traefik_port_https }}"
+
+# Dashboard
+
+{% if traefik_dashboard_enable %}
+[api]
+  dashboard = true
+{% endif %}
+
+# Dynamic configuration providers
+
+[providers.file]
+  directory = "/conf.d"
+{% if traefik_docker_enable %}
+[providers.docker]
+  endpoint = "unix:///var/run/docker.sock"
+  network = "{{ traefik_docker_external_network }}"
+  exposedByDefault = {{ traefik_docker_expose_by_default | lower }}
+{% endif %}
+
+# Certificate resolvers
+
+{% if traefik_acme_enable %}
+[certificatesResolvers.le.acme]
+  email = "{{ traefik_acme_email }}"
+  storage = "acme.json"
+  [certificatesResolvers.le.acme.tlsChallenge]
+{% endif %}

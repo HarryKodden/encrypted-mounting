@@ -1,0 +1,36 @@
+---
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ rclone_directory }}"
+    - "{{ rclone_directory }}/tmp-pam"
+
+- name: Git checkout
+  ansible.builtin.git:
+    repo: 'https://github.com/HarryKodden/encrypted-mounting.git'
+    dest: "{{ rclone_directory }}"
+    update: yes
+    force: yes
+
+- name: Git checkout SRAM Token Service
+  ansible.builtin.git:
+    repo: 'https://github.com/HarryKodden/SRAM-Token-Service.git'
+    dest: "{{ rclone_directory }}/tmp-pam"
+    update: yes
+    force: yes
+
+- name: Copy SRAM Token PAM module...
+  shell: "cp {{ rclone_directory }}/tmp-pam/bin/sram-token.py {{ rclone_directory }}/mount/pam-validate.py"
+
+- name: Remove SRAM Token Service
+  file:
+    state: absent
+    path: "{{ rclone_directory }}/tmp-pam"
+
+- name: Render docker-compose config
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ rclone_directory }}/docker-compose.yml"
+  notify: start rclone

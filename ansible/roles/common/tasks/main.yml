@@ -1,0 +1,37 @@
+---
+- name: Install aptitude using apt
+  apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
+
+- name: Install required system packages
+  apt: name={{ item }} state=latest update_cache=yes
+  loop:
+    - curl
+    - ca-certificates
+    - apt-transport-https
+    - software-properties-common
+    - python3-pip
+    - python3-setuptools
+    - virtualenv
+    - git
+    - fuse
+
+- name: install gpg
+  apt:
+    name: gnupg
+    update_cache: yes    
+
+- name: set login banner
+  copy:
+    src: issue
+    dest: /etc/issue
+    owner: root
+    group: root
+    mode: 0644
+
+- name: set welcome banner
+  copy:
+    src: motd
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: 0644

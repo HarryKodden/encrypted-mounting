@@ -1,0 +1,18 @@
+---
+- name: Pull Docker image
+  docker_image:
+    name: vault
+    source: pull
+    tag: "{{ vault_version }}"
+
+- name: Render vault config
+  template:
+    src: config.j2
+    dest: "{{ vault_directory }}/etc/config.json"
+
+- name: Render docker-compose config
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ vault_directory }}/docker-compose.yml"
+
+
