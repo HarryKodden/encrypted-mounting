@@ -33,7 +33,6 @@ VAULT_PASS = os.environ.get('VAULT_PASS', 'secret')
 RCLONE_ADMIN_CONFIG = os.environ.get('RCLONE_ADMIN_CONFIG', '/etc/rclone.conf')
 CACHE_DIR = os.environ.get('CACHE_DIR', '/tmp')
 
-# SRAM Settings
-SRAM_WALLET_URL = os.environ.get('SRAM_WALLET_URL', 'http://localhost')
-SRAM_ADMIN_GROUP= os.environ.get('SRAM_ADMIN_GROUP', 'admin')
-SRAN_USERS_GROUP= os.environ.get('SRAN_USERS_GROUP', 'users')
+# PAM Settings
+PAM_VALIDATE_ADMIN = os.environ.get('PAM_VALIDATE_ADMIN', '')
+PAM_VALIDATE_USERS = os.environ.get('PAM_VALIDATE_USERS', '')
