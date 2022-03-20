@@ -19,7 +19,7 @@ RUN pip2 install requests
 
 ADD proxy.conf /etc/nginx/proxy.conf
 ADD conf.d /etc/nginx/conf.d
-ADD vault-pam-wallet.py /usr/local/bin/
+ADD pam-validate.py /usr/local/bin/
 
 RUN rm -f /etc/nginx/conf.d/default.conf /etc/nginx/sites-enabled/*
 

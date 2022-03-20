@@ -341,10 +341,7 @@ class rClone(Vault):
 
             with open(self.pam_mount_filename(name), 'w') as f:
                 f.write(
-                    "auth required pam_python.so "
-                    "/usr/local/bin/vault-pam-wallet.py "
-                    f"url={settings.SRAM_WALLET_URL} "
-                    f"service={settings.SRAN_USERS_GROUP}\n"
+                    f"auth required pam_python.so /usr/local/bin/pam-validate.py {settings.PAM_VALIDATE_USERS}\n"
                     "account required pam_permit.so\n"
                 )
 
