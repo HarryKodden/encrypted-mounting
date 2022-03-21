@@ -172,7 +172,7 @@ class rClone(Vault):
 
         if 'secrets' not in payload:
             # Initialize secrets for encrypted mountpoint
-            payload['secrets'] {
+            payload['secrets'] = {
                 'pass': str(uuid.uuid4()),
                 'path': str(uuid.uuid4())
             }
@@ -275,14 +275,14 @@ class rClone(Vault):
         config = configparser.ConfigParser()
 
         try:
-            secrets = details.pop('secrets', None)]
+            secrets = details.pop('secrets', None)
 
             config[name+'_src'] = details
 
             config[name] = {
                 'type': 'crypt',
-                'remote': name+'_src:'secrets['path'], 
-                'password': run(['rclone', 'obscure', secrets['pass']),
+                'remote': name+'_src:'+secrets['path'], 
+                'password': run(['rclone', 'obscure', secrets['pass']]),
                 'filename_encryption': 'off',
                 'directory_name_encryption': 'false'
             }
