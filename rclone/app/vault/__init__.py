@@ -15,8 +15,6 @@ from requests import request
 log = logging.getLogger(__name__)
 
 
-CIPHER = 'cipher'
-PATH = 'path'
 CONF_PATH = '/usr/local/etc'
 
 def pretty(data):
@@ -146,7 +144,7 @@ class rClone(Vault):
             raise Exception("status code: {}".format(rc))
 
 
-    def read(self, name, cipher=False, path=False):
+    def read(self, name, secrets=False):
         log.info("[READ] {}".format(name))
 
         (rc, data) = self.api(
@@ -159,10 +157,8 @@ class rClone(Vault):
 
         data = json.loads(data)['data']['data']
 
-        if not cipher:
-            data.pop(CIPHER, None)
-        if not path:
-            data.pop(PATH, None)
+        if not secrets:
+            data.pop('secrets', None)
 
         return data
 
@@ -170,14 +166,20 @@ class rClone(Vault):
         log.info("[WRITE] {}".format(name))
 
         try:
+<<<<<<< HEAD
+            payload = self.read(name, secrets=True)
+=======
             payload = self.read(name, cipher=True, path=True)
+>>>>>>> 06af570cca1f1cb32f02332a3d13872a3652ac7c
         except:
             payload = {}
 
-        if CIPHER not in payload:
-            payload[CIPHER] = str(uuid.uuid4())
-        if PATH not in payload:
-            payload[PATH] = str(uuid.uuid4())
+        if 'secrets' not in payload:
+            # Initialize secrets for encrypted mountpoint
+            payload['secrets'] {
+                'pass': str(uuid.uuid4()),
+                'path': str(uuid.uuid4())
+            }
         
         payload.update(config)
 
@@ -269,7 +271,7 @@ class rClone(Vault):
     def start_mount(self, name):
 
         try:
-            details = self.read(name, cipher=True, path=True)
+            details = self.read(name, secrets=True)
         except:
             self.stop(name)
             return
@@ -277,15 +279,14 @@ class rClone(Vault):
         config = configparser.ConfigParser()
 
         try:
-            password = run(['rclone', 'obscure', details.pop(CIPHER, None)])
-            path = details.pop(PATH, 'encrypted')
+            secrets = details.pop('secrets', None)]
 
             config[name+'_src'] = details
 
             config[name] = {
                 'type': 'crypt',
-                'remote': name+'_src:'+path, 
-                'password': password,
+                'remote': name+'_src:'secrets['path'], 
+                'password': run(['rclone', 'obscure', secrets['pass']),
                 'filename_encryption': 'off',
                 'directory_name_encryption': 'false'
             }
