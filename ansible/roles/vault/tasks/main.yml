@@ -9,10 +9,10 @@
     stopped: yes
   register: output
 
-#- name: Delete vault file...
-#  file:
-#    state: absent
-#    path: "{{ vault_directory }}/file"
+- name: Delete vault file...
+  file:
+    state: absent
+    path: "{{ vault_directory }}/file"
 
 - name: start vault
   community.docker.docker_compose:
