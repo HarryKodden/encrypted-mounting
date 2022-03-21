@@ -18,8 +18,8 @@ services:
       - CACHE_DIR=/cache
       - BASE_PATH=admin
       - LOG_LEVEL=DEBUG
-      - PAM_VALIDATE_ADMIN=url={{ sram_url }} token={{ sram_admin_service_bearer_token }}
-      - PAM_VALIDATE_USERS=url={{ sram_url }} token={{ sram_users_service_bearer_token }}
+      - PAM_VALIDATE_ADMIN=url={{ env_vars.SRAM_URL }} token={{ env_vars.ADMIN_BEARER_TOKEN }}
+      - PAM_VALIDATE_USERS=url={{ env_vars.SRAM_URL }} token={{ env_vars.USERS_BEARER_TOKEN }}
     networks:
       - {{ traefik_docker_internal_network }}
     restart: unless-stopped

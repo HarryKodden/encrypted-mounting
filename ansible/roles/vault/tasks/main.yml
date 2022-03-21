@@ -58,7 +58,7 @@
   ignore_errors: yes
   register: output
 
-- name: Reading unseal key contents
+- name: Reading root token
   command: "cat {{ vault_directory }}/etc/rootkey"
   register: root_token
 
