@@ -5,7 +5,6 @@
     state: directory
   with_items:
     - "{{ rclone_directory }}"
-    - "{{ rclone_directory }}/tmp-pam"
 
 - name: Git checkout
   ansible.builtin.git:

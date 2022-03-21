@@ -7,7 +7,7 @@ RUN apt-get update && \
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-COPY --from=rclone/rclone:latest /usr/local/bin/rclone /usr/local/bin/
+COPY --from=rclone/rclone:1.57 /usr/local/bin/rclone /usr/local/bin/
 
 WORKDIR /app
 
