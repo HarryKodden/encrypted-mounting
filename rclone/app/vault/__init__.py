@@ -166,11 +166,7 @@ class rClone(Vault):
         log.info("[WRITE] {}".format(name))
 
         try:
-<<<<<<< HEAD
             payload = self.read(name, secrets=True)
-=======
-            payload = self.read(name, cipher=True, path=True)
->>>>>>> 06af570cca1f1cb32f02332a3d13872a3652ac7c
         except:
             payload = {}
 
