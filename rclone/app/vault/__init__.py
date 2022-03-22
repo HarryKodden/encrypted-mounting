@@ -198,7 +198,7 @@ class rClone(Vault):
 
             update = True
         else:
-            for k,v in config:
+            for k,v in config.items():
                 if k not in payload or payload[k] != v:
                     update = True
                     break
