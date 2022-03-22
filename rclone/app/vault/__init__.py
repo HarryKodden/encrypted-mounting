@@ -187,23 +187,33 @@ class rClone(Vault):
         except:
             payload = {}
 
+        update = False
+
         if 'secrets' not in payload:
             # Initialize secrets for encrypted mountpoint
             payload['secrets'] = {
                 'pass': str(uuid.uuid4()),
                 'path': str(uuid.uuid4())
             }
-        
-        payload.update(config)
 
-        (rc, _) = self.api(
-            "/v1/secret/data/mounts/{}".format(name), 
-            method="POST", 
-            payload={ 'data': payload }
-        )
+            update = True
+        else:
+            for k,v in config:
+                if k not in payload or payload[k] != v:
+                    update = True
+                    break
 
-        if rc != 200:
-            raise Exception("status code: {}".format(rc))
+        if update:
+            payload.update(config)
+
+            (rc, _) = self.api(
+                "/v1/secret/data/mounts/{}".format(name), 
+                method="POST", 
+                payload={ 'data': payload }
+            )
+
+            if rc != 200:
+                raise Exception("status code: {}".format(rc))
 
         self.start_mount(name)
 
