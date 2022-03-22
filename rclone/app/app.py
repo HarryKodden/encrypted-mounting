@@ -87,7 +87,7 @@ def initialize_app(flask_app):
 def main():
     initialize_app(app)
     
-    app.run(debug=settings.DEBUG, host = settings.HOST, port = settings.PORT)
+    app.run(debug=(settings.LOG_LEVEL == 'DEBUG'), host = settings.HOST, port = settings.PORT)
 
 
 if __name__ == "__main__":
