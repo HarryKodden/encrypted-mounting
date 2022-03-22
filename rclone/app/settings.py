@@ -7,6 +7,8 @@ DEBUG = os.environ.get("FLASK_DEBUG", True)
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "ERROR")
 SERVER_URL = os.environ.get("SERVER_URL", "http://localhost:{}".format(PORT))
 BASE_PATH = "/" + os.environ.get("BASE_PATH", "")
+ADMIN_CONFIG_FILE = os.environ.get("ADMIN_CONFIG_FILE", "/etc/rclone.conf")
+USERS_CONFIG_PATH = os.environ.get("USERS_CONFIG_PATH", "/usr/local/etc")
 
 # API Settings
 API_KEY = 'X-API-KEY'

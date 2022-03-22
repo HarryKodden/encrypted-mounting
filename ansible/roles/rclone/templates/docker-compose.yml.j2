@@ -13,10 +13,10 @@ services:
     environment:
       - SERVER_URL=https://mount.{{ inventory_hostname }}
       - VAULT_ADDR={{ vault_url }}
-#     - VAULT_TOKEN={{ vault_token }}
       - VAULT_USER={{ admin_username }}
       - VAULT_PASS={{ admin_password }}
-      - RCLONE_ADMIN_CONFIG=/etc/rclone.conf
+      - USERS_CONFIG_PATH=/usr/local/etc
+      - ADMIN_CONFIG_FILE=/etc/rclone.conf
       - CACHE_DIR=/cache
       - BASE_PATH=admin
       - LOG_LEVEL=DEBUG
@@ -38,7 +38,7 @@ services:
         RC_USER=admin
         RC_PASS=$$(cat /proc/sys/kernel/random/uuid)
 
-        rclone --config=$$RCLONE_ADMIN_CONFIG rcd --rc-user=$$RC_USER --rc-pass=$$RC_PASS --rc-web-gui --rc-no-auth --rc-baseurl=$$BASE_PATH --rc-addr=0.0.0.0:5572 &
+        rclone --config=$$ADMIN_CONFIG_FILE rcd --rc-user=$$RC_USER --rc-pass=$$RC_PASS --rc-web-gui --rc-no-auth --rc-baseurl=$$BASE_PATH --rc-addr=0.0.0.0:5572 &
         
         cat << EOF > /etc/mounts/admin.pam
         auth required pam_python.so /usr/local/bin/pam-validate.py $$PAM_VALIDATE_ADMIN
