@@ -19,7 +19,7 @@ services:
       - ADMIN_CONFIG_FILE=/etc/rclone.conf
       - CACHE_DIR=/cache
       - BASE_PATH=admin
-      - LOG_LEVEL=DEBUG
+      - LOG_LEVEL={{ log_level }}
       - PAM_VALIDATE_ADMIN=url={{ env_vars.SRAM_URL }} token={{ env_vars.ADMIN_BEARER_TOKEN }}
       - PAM_VALIDATE_USERS=url={{ env_vars.SRAM_URL }} token={{ env_vars.USERS_BEARER_TOKEN }}
     networks:

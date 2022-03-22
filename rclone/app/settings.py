@@ -3,7 +3,6 @@ import os
 # Flask settings
 HOST = os.environ.get("HOST","0.0.0.0")
 PORT = os.environ.get("PORT", 80)
-DEBUG = os.environ.get("FLASK_DEBUG", True)
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "ERROR")
 SERVER_URL = os.environ.get("SERVER_URL", "http://localhost:{}".format(PORT))
 BASE_PATH = "/" + os.environ.get("BASE_PATH", "")
