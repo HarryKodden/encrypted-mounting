@@ -13,7 +13,9 @@ services:
     environment:
       - SERVER_URL=https://mount.{{ inventory_hostname }}
       - VAULT_ADDR={{ vault_url }}
-      - VAULT_TOKEN={{ vault_token }}
+#     - VAULT_TOKEN={{ vault_token }}
+      - VAULT_USER={{ admin_username }}
+      - VAULT_PASS={{ admin_password }}
       - RCLONE_ADMIN_CONFIG=/etc/rclone.conf
       - CACHE_DIR=/cache
       - BASE_PATH=admin

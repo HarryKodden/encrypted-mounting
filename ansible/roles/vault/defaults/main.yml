@@ -11,6 +11,7 @@ vault_log_level: "ERROR"
 vault_accesslog_enable: false
 vault_shares: 5
 vault_treshold: 3
+vault_clean_data: false
 
 # Vault Config settings
 vault_ui: "true"
