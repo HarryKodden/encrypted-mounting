@@ -14,9 +14,6 @@ from requests import request
 
 log = logging.getLogger(__name__)
 
-
-CONF_PATH = '/usr/local/etc'
-
 def pretty(data):
     try:
         return json.dumps(json.loads(data), sort_keys=True, indent=4)
@@ -310,7 +307,7 @@ class rClone(Vault):
             log.error("Error during config: {}: {}".format(name, str(e)))
             return
     
-        with open(CONF_PATH+'/'+name+'.conf', 'w') as f:
+        with open(settings.USERS_CONFIG_PATH+'/'+name+'.conf', 'w') as f:
             config.write(f)
 
         md5_file = self.md5_mount_filename(name)
@@ -335,7 +332,7 @@ class rClone(Vault):
         try:
             spawn([
                 'rclone', 
-                '--config='+CONF_PATH+'/'+name+'.conf', 
+                '--config='+settings.USERS_CONFIG_PATH+'/'+name+'.conf', 
                 'serve', 'webdav', name+':',
                 '--addr=0.0.0.0:{}'.format(port),
                 '--baseurl=webdav/'+name,
@@ -373,7 +370,7 @@ class rClone(Vault):
         for name, details in self.dump().items():
             config[name] = details
 
-        with open(settings.RCLONE_ADMIN_CONFIG, 'w') as f:
+        with open(settings.ADMIN_CONFIG_FILE, 'w') as f:
             config.write(f)
 
     def stop(self):

@@ -14,7 +14,8 @@ services:
       - VAULT_ADDR=${VAULT_ADDR}
       - VAULT_USER=${VAULT_USER}
       - VAULT_PASS=${VAULT_PASS}
-      - RCLONE_ADMIN_CONFIG=/etc/rclone.conf
+      - USERS_CONFIG_PATH=/usr/local/etc
+      - ADMIN_CONFIG_FILE=/etc/rclone.conf
       - CACHE_DIR=/cache
       - BASE_PATH=admin
       - LOG_LEVEL=DEBUG
