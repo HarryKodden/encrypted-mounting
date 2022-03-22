@@ -32,4 +32,15 @@
   template:
     src: docker-compose.yml.j2
     dest: "{{ rclone_directory }}/docker-compose.yml"
-  notify: start rclone
+
+- name: Stop rclone
+  community.docker.docker_compose:
+    project_src: "{{ rclone_directory }}"
+    stopped: yes
+
+- name: Start rclone
+  community.docker.docker_compose:
+    state: present
+    project_src: "{{ rclone_directory }}"
+    restarted: yes
+    build: yes

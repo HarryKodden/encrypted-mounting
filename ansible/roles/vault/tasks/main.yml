@@ -13,6 +13,7 @@
   file:
     state: absent
     path: "{{ vault_directory }}/file"
+  when: vault_clean_data
 
 - name: start vault
   community.docker.docker_compose:
@@ -70,6 +71,41 @@
   shell: "docker exec -e VAULT_TOKEN={{ vault_token }} vault vault secrets enable -version=2 -path=secret kv"
   ignore_errors: yes
 
-#- name: Root token...
-#  ansible.builtin.debug:
-#    msg: "{{ vault_token }}"
+- name: Enable userpass auth method...
+  shell: "docker exec -e VAULT_TOKEN={{ vault_token }} vault vault auth enable userpass"
+  ignore_errors: yes
+
+- name: Check Vault health...
+  uri:
+    url: "{{ vault_url }}/v1/sys/health"
+  register: health
+
+- name: Show health...
+  ansible.builtin.debug:
+    msg: "{{ health }}"
+
+- name: Create admin policy...
+  uri:
+    url: "{{ vault_url }}/v1/sys/policy/admin"
+    method: POST
+    body: "{{ lookup('file','admin-policy.json') }}"
+    body_format: json
+    status_code: 204
+    headers:
+      Content-Type: application/json
+      X-Vault-Token: "{{ vault_token }}"
+
+- name: create password for mount user
+  set_fact:
+    admin_password: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=32') }}"
+
+- name: Create admin user...
+  uri:
+    url: "{{ vault_url }}/v1/auth/userpass/users/{{ admin_username }}"
+    method: POST
+    body: "{ \"password\": \"{{ admin_password }}\", \"policies\": \"admin,default\"}"
+    body_format: json
+    status_code: 204
+    headers:
+      Content-Type: application/json
+      X-Vault-Token: "{{ vault_token }}"

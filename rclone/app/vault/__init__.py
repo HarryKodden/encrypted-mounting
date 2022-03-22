@@ -29,17 +29,25 @@ def find_free_port():
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         return s.getsockname()[1]
 
-vault_default_headers = {
-    "X-Vault-Token": settings.VAULT_TOKEN,
-    "Content-Type": "application/json"
-}
-
 class Vault(object):
 
     def __init__(self):
-        global vault_default_headers
+        self.token = None
+        
+    def headers(self):
 
-        if not vault_default_headers['X-Vault-Token']:
+        if self.token:
+            # Check token is still valid...
+            (rc, _) = self.api(
+                "/v1/sys/auth",
+                headers={ "X-Vault-Token": self.token }
+            )
+
+            if rc == 403:
+                self.token = None
+
+        if not self.token:
+            # Authenticate...
             (rc, data) = self.api(
                 "/v1/auth/userpass/login/{}".format(settings.VAULT_USER),
                 method="POST",
@@ -48,9 +56,21 @@ class Vault(object):
             )
 
             if rc == 200:
-                vault_default_headers["X-Vault-Token"] = json.loads(data)['auth']['client_token']
+                self.token = json.loads(data)['auth']['client_token']
 
-    def api(self, uri, method="GET", payload={}, headers=vault_default_headers):
+        if not self.token:
+            raise Exception("Can not connect to Vault !")
+
+        return {
+            "X-Vault-Token": self.token,
+            "Content-Type": "application/json"
+        }
+
+    def api(self, uri, method="GET", payload={}, headers=None):
+
+        if not headers:
+            headers = self.headers()
+
         url = "{}{}".format(settings.VAULT_ADDR, uri)
         log.debug("[VAULT] URL: {}".format(url))
         
