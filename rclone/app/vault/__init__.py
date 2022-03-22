@@ -128,7 +128,7 @@ class rClone(Vault):
         super().__init__()
         self.start()
 
-    def mounts(self, cipher=False):
+    def mounts(self):
         log.info("[MOUNTS]...")
 
         result = {}
@@ -141,7 +141,7 @@ class rClone(Vault):
         if rc == 200:
             for name in json.loads(data)['data']['keys']:
                 try:
-                    result[name] = self.read(name, cipher)
+                    result[name] = self.read(name)
                 except:
                     pass
 
