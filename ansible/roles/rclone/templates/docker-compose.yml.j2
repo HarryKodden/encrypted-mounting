@@ -11,6 +11,7 @@ services:
       - cache:/cache
       - /mnt:/mnt:shared
     environment:
+      - LOG_LEVEL={{ log_level }}
       - SERVER_URL=https://mount.{{ inventory_hostname }}
       - VAULT_ADDR={{ vault_url }}
       - VAULT_USER={{ admin_username }}
@@ -19,9 +20,8 @@ services:
       - ADMIN_CONFIG_FILE=/etc/rclone.conf
       - CACHE_DIR=/cache
       - BASE_PATH=admin
-      - LOG_LEVEL={{ log_level }}
-      - PAM_VALIDATE_ADMIN=url={{ env_vars.SRAM_URL }} token={{ env_vars.ADMIN_BEARER_TOKEN }}
-      - PAM_VALIDATE_USERS=url={{ env_vars.SRAM_URL }} token={{ env_vars.USERS_BEARER_TOKEN }}
+      - ADMIN_ACCESS_GROUP={{ SRAM_OIDC_USER_ACCESS_GROUP }}
+      - PAM_VALIDATE_USERS=url={{ SRAM_URL }} token={{ USERS_BEARER_TOKEN }}
     networks:
       - {{ traefik_docker_internal_network }}
     restart: unless-stopped
@@ -53,9 +53,22 @@ services:
           proxy_pass http://rclone:5572;
         }
 
+        include sso.conf;
+        
         location /$$BASE_PATH {  
-          auth_pam "Secure area";
-          auth_pam_service_name "admin";
+          auth_request /sso/validate;
+
+          auth_request_set \$$entitlements  \$$upstream_http_x_vouch_idp_claims_eduperson_entitlement;
+
+          access_by_lua_block {
+              access_group = os.getenv("ADMIN_ACCESS_GROUP");
+              if access_group then
+                  entitlements = ngx.var.entitlements;
+                  if not entitlements or not entitlements:find(access_group) then
+                      ngx.exit(ngx.HTTP_FORBIDDEN)
+                  end
+              end
+          }
 
           # Selectively pass directly to rclone...
           location ~ ^/$$BASE_PATH(?!(/api|/swaggerui|/config/(dump|get|create|update|delete|listremotes))) { 
@@ -84,6 +97,7 @@ services:
     container_name: mount
     volumes:
       - mounts:/etc/mounts
+      - ./sso.conf:/etc/nginx/sso.conf:ro
     networks:
       - {{ traefik_docker_internal_network }}
       - {{ traefik_docker_external_network }}

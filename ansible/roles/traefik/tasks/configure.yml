@@ -5,6 +5,13 @@
     dest: "{{ traefik_directory }}/traefik.toml"
   notify: restart traefik
 
+
+- name: Render sso config
+  template:
+    src: sso.yml.j2
+    dest: "{{ traefik_directory }}/sso.yml"
+  notify: restart traefik
+
 - name: Render docker-compose config
   template:
     src: docker-compose.yml.j2

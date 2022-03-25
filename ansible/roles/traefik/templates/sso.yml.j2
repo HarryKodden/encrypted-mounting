@@ -1,0 +1,46 @@
+# vouch config
+
+vouch:
+  logLevel: error
+  testing: false
+  listen: 0.0.0.0
+  port: 9090
+  allowAllUsers: false
+
+  domains:
+    - {{ SRAM_OIDC_USER_DOMAIN }}
+
+  jwt:
+    secret: {{ sso_jwt_secret }}
+    issuer: Vouch
+    compress: true
+
+  cookie:
+    name: sso-cookie
+    secure: true
+    domain: {{ inventory_hostname }}
+    sameSite: lax
+
+  headers:
+    jwt: X-Vouch-Token
+    querystring: access_token
+    redirect: X-Vouch-Requested-URI
+    accesstoken: X-Vouch-IdP-AccessToken
+    claims:
+      - uid
+      - eduperson_entitlement
+
+oauth:
+  provider: oidc
+  client_id: {{ SRAM_OIDC_CLIENT_ID }}
+  client_secret: {{ SRAM_OIDC_CLIENT_SECRET }}
+  auth_url: {{ SRAM_OIDC_BASE_URL }}/saml2sp/OIDC/authorization
+  token_url: {{ SRAM_OIDC_BASE_URL }}/OIDC/token
+  user_info_url: {{ SRAM_OIDC_BASE_URL }}/OIDC/userinfo
+  scopes:
+    - openid
+    - uid
+    - email
+    - eduperson_entitlement
+  callback_urls:
+    - {{ traefik_url }}/sso/auth
