@@ -19,8 +19,8 @@ services:
       - CACHE_DIR=/cache
       - BASE_PATH=admin
       - LOG_LEVEL=DEBUG
-      - PAM_VALIDATE_ADMIN="url=${SRAM_WALLET_URL} debug service=${SRAM_ADMIN_GROUP}"
-      - PAM_VALIDATE_USERS="url=${SRAM_WALLET_URL} debug service=${SRAN_USERS_GROUP}"
+      - PAM_VALIDATE_ADMIN=url=${SRAM_WALLET_URL} debug service=${SRAM_ADMIN_GROUP}
+      - PAM_VALIDATE_USERS=url=${SRAM_WALLET_URL} debug service=${SRAN_USERS_GROUP}
     networks:
       - internal
     restart: unless-stopped
