@@ -3,7 +3,7 @@ FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && apt-get install -y \
-    nginx nginx-full libnginx-mod-http-lua wget cron curl vim libpam-dev libpam-python rsyslog locales
+    nginx nginx-full wget cron curl vim libpam-dev libpam-python rsyslog locales
 
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
     dpkg-reconfigure --frontend=noninteractive locales && \

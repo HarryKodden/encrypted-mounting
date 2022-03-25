@@ -3,6 +3,7 @@
     - workspace
   become: true
   vars_files:
+    - .env.yml
     - vars/default.yml
 
   roles:

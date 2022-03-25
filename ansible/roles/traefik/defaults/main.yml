@@ -4,7 +4,8 @@ traefik_version: "latest"
 traefik_directory: "/opt/traefik"
 
 # General settings
-traefik_domain: "traefik.{{ inventory_hostname }}"
+traefik_domain: "proxy.{{ inventory_hostname }}"
+traefik_url: "https://{{ traefik_domain }}"
 traefik_log_level: "ERROR"
 traefik_accesslog_enable: false
 
@@ -31,3 +32,6 @@ traefik_acme_email: "admin@{{ inventory_hostname }}"
 
 # Secrets...
 administrators: ["harry:$$apr1$$mfkWdJII$$VOyDAkJLbZFTVx8P18EdA/"]
+
+# sso jwt secret
+sso_jwt_secret: rsndfpzApMhCL/tohrugkxinXt[6pkTQAWmZMLFyfqkTmqr2LHuZDDJefXaBGWJJ

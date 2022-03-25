@@ -2,6 +2,7 @@
 version: '3'
 
 services:
+
   traefik:
     image: traefik:{{ traefik_version }}
     restart: unless-stopped
@@ -40,7 +41,32 @@ services:
 {% endif %}
     container_name: traefik
 
+sso:
+  image: quay.io/vouch/vouch-proxy
+  restart: unless-stopped
+  container_name: sso
+  volumes:
+    - ./sso.yml:/config/config.yml:ro
+  networks:
+    - internal
+    - external
+  environment:
+    - VOUCH_DOCUMENT_ROOT=/sso
+  logging:
+    driver: "none"
+  labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.sso.rule=Host(`{{ traefik_domain }}`) && PathPrefix(`/sso`)"
+    - "traefik.http.routers.sso.tls=true"
+    - "traefik.http.routers.sso.tls.certresolver=le"
+    - "traefik.http.routers.sso.entrypoints=https"
+    - "traefik.http.routers.sso.service=sso"
+    - "traefik.http.services.sso.loadbalancer.server.port=9090"
+
 networks:
   {{ traefik_docker_external_network }}:
     external:
       name: {{ traefik_docker_external_network }}
+  {{ traefik_docker_internal_network }}:
+    external:
+      name: {{ traefik_docker_internal_network }}

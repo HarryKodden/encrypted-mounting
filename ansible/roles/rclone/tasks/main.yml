@@ -33,6 +33,11 @@
     src: docker-compose.yml.j2
     dest: "{{ rclone_directory }}/docker-compose.yml"
 
+- name: Render sso.conf for nginx
+  template:
+    src: sso.conf.j2
+    dest: "{{ rclone_directory }}/sso.conf"
+
 - name: Stop rclone
   community.docker.docker_compose:
     project_src: "{{ rclone_directory }}"
