@@ -20,7 +20,6 @@ services:
       - ADMIN_CONFIG_FILE=/etc/rclone.conf
       - CACHE_DIR=/cache
       - BASE_PATH=admin
-      - ADMIN_ACCESS_GROUP={{ SRAM_OIDC_USER_ACCESS_GROUP }}
       - PAM_VALIDATE_USERS=url={{ SRAM_URL }} token={{ USERS_BEARER_TOKEN }}
     networks:
       - {{ traefik_docker_internal_network }}
@@ -38,7 +37,7 @@ services:
         RC_USER=admin
         RC_PASS=$$(cat /proc/sys/kernel/random/uuid)
 
-        rclone --config=$$ADMIN_CONFIG_FILE rcd --rc-user=$$RC_USER --rc-pass=$$RC_PASS --rc-web-gui --rc-no-auth --rc-baseurl=$$BASE_PATH --rc-addr=0.0.0.0:5572 &
+        rclone --config=$$ADMIN_CONFIG_FILE rcd --rc-user=$$RC_USER --rc-pass=$$RC_PASS --rc-web-gui --rc-allow-origin $$SERVER_URL --rc-no-auth --rc-baseurl=$$BASE_PATH --rc-addr=0.0.0.0:5572 &
         
         cat << EOF > /etc/mounts/admin.pam
         auth required pam_python.so /usr/local/bin/pam-validate.py $$PAM_VALIDATE_ADMIN
@@ -98,6 +97,8 @@ services:
     volumes:
       - mounts:/etc/mounts
       - ./sso.conf:/etc/nginx/sso.conf:ro
+    environment:
+      - ADMIN_ACCESS_GROUP={{ SRAM_OIDC_USER_ACCESS_GROUP }}
     networks:
       - {{ traefik_docker_internal_network }}
       - {{ traefik_docker_external_network }}
