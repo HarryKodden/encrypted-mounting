@@ -4,6 +4,7 @@ version: '3'
 services:
 
   traefik:
+    container_name: traefik
     image: traefik:{{ traefik_version }}
     restart: unless-stopped
     ports:
@@ -39,9 +40,9 @@ services:
 {% if traefik_acme_enable %}
       - "{{ traefik_directory }}/acme.json:/acme.json"
 {% endif %}
-    container_name: traefik
 
   sso:
+    container_name: sso
     image: quay.io/vouch/vouch-proxy
     restart: unless-stopped
     volumes:

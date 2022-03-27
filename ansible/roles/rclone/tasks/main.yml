@@ -46,7 +46,6 @@
 
 - name: Start rclone
   community.docker.docker_compose:
-    state: present
     project_src: "{{ rclone_directory }}"
     state: present
     build: yes
