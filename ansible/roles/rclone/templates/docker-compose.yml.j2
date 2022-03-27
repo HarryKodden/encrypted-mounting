@@ -55,7 +55,7 @@ services:
         include sso.conf;
 
         location /$$BASE_PATH {  
-          error_page 401 = @error401;
+          error_page 401 = @sso_401;
 
           auth_request /sso/validate;
 

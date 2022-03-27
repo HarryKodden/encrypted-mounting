@@ -44,7 +44,6 @@ services:
   sso:
     image: quay.io/vouch/vouch-proxy
     restart: unless-stopped
-    container_name: sso
     volumes:
       - ./sso.yml:/config/config.yml:ro
     networks:
