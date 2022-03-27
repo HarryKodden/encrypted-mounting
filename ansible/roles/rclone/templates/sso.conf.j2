@@ -11,7 +11,7 @@ location /sso {
     auth_request_set $auth_resp_failcount $upstream_http_x_vouch_failcount;
 }
 
-error_page 401 = @error401;
+# error_page 401 = @error401;
 
 # If the user is not logged in, redirect them to Vouch's login URL
 location @error401 {

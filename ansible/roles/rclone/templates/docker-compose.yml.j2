@@ -53,8 +53,10 @@ services:
         }
 
         include sso.conf;
-        
+
         location /$$BASE_PATH {  
+          error_page 401 = @error401;
+
           auth_request /sso/validate;
 
           auth_request_set \$$entitlements  \$$upstream_http_x_vouch_idp_claims_eduperson_entitlement;
