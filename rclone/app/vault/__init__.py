@@ -120,7 +120,7 @@ def pipe(cmds):
     return out.decode()
 
 def spawn(cmd):
-    p = subprocess.Popen(cmd, start_new_session=True)
+    subprocess.Popen(cmd, start_new_session=True)
         
 class rClone(Vault):
 
