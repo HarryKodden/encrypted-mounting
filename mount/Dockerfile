@@ -15,7 +15,7 @@ RUN add-apt-repository universe
 RUN apt-get install -y python2
 RUN curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output /tmp/get-pip.py
 RUN python2 /tmp/get-pip.py
-RUN pip2 install requests
+RUN pip2 install requests redis
 
 ADD proxy.conf /etc/nginx/proxy.conf
 ADD conf.d /etc/nginx/conf.d
