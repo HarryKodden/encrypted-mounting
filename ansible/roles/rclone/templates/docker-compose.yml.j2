@@ -20,7 +20,7 @@ services:
       - ADMIN_CONFIG_FILE=/etc/rclone.conf
       - CACHE_DIR=/cache
       - BASE_PATH=admin
-      - PAM_VALIDATE_USERS=url={{ SRAM_URL }} token={{ USERS_BEARER_TOKEN }}
+      - PAM_VALIDATE_USERS=url={{ SRAM_URL }} token={{ USERS_BEARER_TOKEN }} REDIS_HOST=redis
     networks:
       - {{ traefik_docker_internal_network }}
     restart: unless-stopped
@@ -93,6 +93,14 @@ services:
 
         python app.py
 
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - 6379
+    networks:
+      - internal
+
   mount:
     build: mount
     container_name: mount
@@ -104,6 +112,8 @@ services:
     networks:
       - {{ traefik_docker_internal_network }}
       - {{ traefik_docker_external_network }}
+    depends_on:
+      - redis
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mount.rule=Host(`mount.{{ inventory_hostname }}`)"
