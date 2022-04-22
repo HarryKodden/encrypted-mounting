@@ -20,7 +20,7 @@ services:
       - ADMIN_CONFIG_FILE=/etc/rclone.conf
       - CACHE_DIR=/cache
       - BASE_PATH=admin
-      - PAM_VALIDATE_USERS=url={{ SRAM_URL }} token={{ USERS_BEARER_TOKEN }} REDIS_HOST=redis
+      - PAM_VALIDATE_USERS=url={{ SRAM_URL }} token={{ SRAM_SERVICE_BEARER_TOKEN }} REDIS_HOST=redis
     networks:
       - {{ traefik_docker_internal_network }}
     restart: unless-stopped
