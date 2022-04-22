@@ -7,8 +7,7 @@ vouch:
   port: 9090
   allowAllUsers: false
 
-  domains:
-    - {{ SRAM_OIDC_USER_DOMAIN }}
+  allowAllUsers: true
 
   jwt:
     secret: {{ sso_jwt_secret }}

@@ -108,7 +108,7 @@ services:
       - mounts:/etc/mounts
       - ./sso.conf:/etc/nginx/sso.conf:ro
     environment:
-      - ADMIN_ACCESS_GROUP={{ SRAM_OIDC_USER_ACCESS_GROUP }}
+      - ADMIN_ACCESS_GROUP={{ SRAM_OIDC_ADMIN_ACCESS_GROUP }}
     networks:
       - {{ traefik_docker_internal_network }}
       - {{ traefik_docker_external_network }}
