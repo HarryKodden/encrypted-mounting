@@ -20,7 +20,8 @@ services:
       - ADMIN_CONFIG_FILE=/etc/rclone.conf
       - CACHE_DIR=/cache
       - BASE_PATH=admin
-      - PAM_VALIDATE_USERS=url={{ SRAM_URL }} token={{ SRAM_SERVICE_BEARER_TOKEN }} REDIS_HOST=redis
+      - PAM_VALIDATE_USERS=pam_sram_validate.so url={{ SRAM_URL }} token={{ SRAM_SERVICE_BEARER_TOKEN }} redis=redis
+#     - PAM_VALIDATE_USERS=pam_python.so /usr/local/bin/pam-validate.py url={{ SRAM_URL }} token={{ SRAM_SERVICE_BEARER_TOKEN }} redis=redis
     networks:
       - {{ traefik_docker_internal_network }}
     restart: unless-stopped
@@ -39,11 +40,6 @@ services:
 
         rclone --config=$$ADMIN_CONFIG_FILE rcd --rc-user=$$RC_USER --rc-pass=$$RC_PASS --rc-web-gui --rc-allow-origin $$SERVER_URL --rc-no-auth --rc-baseurl=$$BASE_PATH --rc-addr=0.0.0.0:5572 &
         
-        cat << EOF > /etc/mounts/admin.pam
-        auth required pam_python.so /usr/local/bin/pam-validate.py $$PAM_VALIDATE_ADMIN
-        account required pam_permit.so
-        EOF
-
         cat << EOF > /etc/mounts/admin.conf
 
         # Exclude stats from PAM authentication
@@ -96,8 +92,6 @@ services:
   redis:
     image: redis
     container_name: redis
-    ports:
-      - 6379
     networks:
       - internal
 
