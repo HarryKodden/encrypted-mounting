@@ -177,6 +177,16 @@ class rClone(Vault):
         if not secrets:
             data.pop('secrets', None)
 
+        obfuscated_password = data.pop('obfuscated', None)
+        plaintext_password = data.pop('pass', None)
+
+        if obfuscated_password:
+            data['pass'] = obfuscated_password
+        elif plaintext_password:
+            data['pass'] = run(['rclone', 'obscure', plaintext_password])
+        else:
+            raise Exception('Missing password for: {}'.format(name))
+
         return data
 
     def write(self, name, config):
@@ -306,15 +316,6 @@ class rClone(Vault):
 
         try:
             secrets = details.pop('secrets', None)
-            obfuscated_password = details.pop('obfuscated', None)
-            plaintext_password = details.pop('pass', None)
-
-            if obfuscated_password:
-                details['pass'] = obfuscated_password
-            elif plaintext_password:
-                details['pass'] = run(['rclone', 'obscure', plaintext_password])
-            else:
-                raise Exception('Missing password for: {}'.format(name))
 
             config[name+'_src'] = details
 
