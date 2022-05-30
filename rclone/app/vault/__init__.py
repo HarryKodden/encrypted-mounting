@@ -236,6 +236,9 @@ class rClone(Vault):
         config.read(filename)
 
         for name in config.sections():
+            if 'pass' in config['name']:
+                config['name']['obfuscated'] = config['name'].pop('pass')
+
             self.write(name, config[name])
 
     def md5_mount_filename(self, name):
@@ -303,6 +306,15 @@ class rClone(Vault):
 
         try:
             secrets = details.pop('secrets', None)
+            obfuscated_password = details.pop('obfuscated', None)
+            plaintext_password = details.pop('pass', None)
+
+            if obfuscated_password:
+                details['pass'] = obfuscated_password
+            elif plaintext_password:
+                details['pass'] = run(['rclone', 'obscure', plaintext_password])
+            else:
+                raise Exception('Missing password for: {}'.format(name))
 
             config[name+'_src'] = details
 
