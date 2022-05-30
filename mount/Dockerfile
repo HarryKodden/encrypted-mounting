@@ -16,7 +16,10 @@ RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
 ENV LANG en_US.UTF-8 
 
 RUN git clone https://github.com/HarryKodden/SRAM-Token-Service.git /pam && \
-    cd /pam/pam_sram_validate && ./autogen.sh || true && ./configure && make install && rm -rf /pam
+    cd /pam && \
+    git clone https://github.com/json-parser/json-parser.git && \
+    make install && \
+    rm -rf /pam
 
 ADD proxy.conf /etc/nginx/proxy.conf
 ADD conf.d /etc/nginx/conf.d
