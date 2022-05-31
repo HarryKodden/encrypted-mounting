@@ -207,6 +207,9 @@ class rClone(Vault):
 
             update = True
         else:
+            # Make sure 'secrets' can never be provided from external input !
+            config.pop('secrets', None)
+            
             for k,v in config.items():
                 if k not in payload or payload[k] != v:
                     update = True
