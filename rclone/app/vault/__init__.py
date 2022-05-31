@@ -209,7 +209,7 @@ class rClone(Vault):
         else:
             # Make sure 'secrets' can never be provided from external input !
             config.pop('secrets', None)
-            
+
             for k,v in config.items():
                 if k not in payload or payload[k] != v:
                     update = True
@@ -285,10 +285,22 @@ class rClone(Vault):
 
             log.info('Stopping process: {}'.format(pid))
             run(['kill', '{}'.format(pid)])
+        except: 
+            pass
 
+        try:
             os.remove(self.md5_mount_filename(name))
-            os.remove(self.pam_mount_filename(name))
+        except OSError:
+            pass
 
+        try:
+            os.remove(self.pam_mount_filename(name))
+        except OSError:
+            pass
+        
+        try:
+            os.remove(self.web_mount_filename(name))
+            # make sure pending session are rerouted...
             with open(self.web_mount_filename(name), 'w') as f:
                 f.write(f"""
                     location /webdav/{name}/ {{  
@@ -297,10 +309,9 @@ class rClone(Vault):
                     }}
                     """
                 )
+        except OSError:
+            pass
 
-        except Exception as e:
-            log.error("Error during stopping: {}: {}".format(name, str(e)))
-    
         self.flush_config()
 
     def start_mount(self, name):
