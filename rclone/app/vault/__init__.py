@@ -189,14 +189,14 @@ class rClone(Vault):
 
         update = False
 
-        if 'pass' in payload:
+        if 'pass' in config:
             # Make sure the password is stored in obfuscated form
             try:
                 # If this doesn't throw exception,
                 # it is obfuscated already, which is good !
-                _ = run(['rclone', 'reveal', payload['pass']]),
+                _ = run(['rclone', 'reveal', config['pass']]),
             except:
-                payload['pass'] = run(['rclone', 'obscure', payload['pass']])
+                config['pass'] = run(['rclone', 'obscure', config['pass']])
 
         if 'secrets' not in payload:
             # Initialize secrets for encrypted mountpoint
