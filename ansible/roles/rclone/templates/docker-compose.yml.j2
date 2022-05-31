@@ -17,6 +17,7 @@ services:
       - VAULT_USER={{ admin_username }}
       - VAULT_PASS={{ admin_password }}
       - USERS_CONFIG_PATH=/usr/local/etc
+      - ADMIN_ACCESS_GROUP={{ SRAM_ADMIN_ACCESS_GROUP }}
       - ADMIN_CONFIG_FILE=/etc/rclone.conf
       - CACHE_DIR=/cache
       - BASE_PATH=admin
@@ -58,12 +59,9 @@ services:
           auth_request_set \$$entitlements  \$$upstream_http_x_vouch_idp_claims_eduperson_entitlement;
 
           access_by_lua_block {
-              access_group = os.getenv("ADMIN_ACCESS_GROUP");
-              if access_group then
-                  entitlements = ngx.var.entitlements;
-                  if not entitlements or not entitlements:find(access_group) then
-                      ngx.exit(ngx.HTTP_FORBIDDEN)
-                  end
+              entitlements = ngx.var.entitlements;
+              if not entitlements or not entitlements:find("$$ADMIN_ACCESS_GROUP") then
+                  ngx.exit(ngx.HTTP_FORBIDDEN)
               end
           }
 
@@ -101,8 +99,6 @@ services:
     volumes:
       - mounts:/etc/mounts
       - ./sso.conf:/etc/nginx/sso.conf:ro
-    environment:
-      - ADMIN_ACCESS_GROUP={{ SRAM_ADMIN_ACCESS_GROUP }}
     networks:
       - {{ traefik_docker_internal_network }}
       - {{ traefik_docker_external_network }}
