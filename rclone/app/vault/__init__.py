@@ -177,16 +177,6 @@ class rClone(Vault):
         if not secrets:
             data.pop('secrets', None)
 
-        obfuscated_password = data.pop('obfuscated', None)
-        plaintext_password = data.pop('pass', None)
-
-        if obfuscated_password:
-            data['pass'] = obfuscated_password
-        elif plaintext_password:
-            data['pass'] = run(['rclone', 'obscure', plaintext_password])
-        else:
-            raise Exception('Missing password for: {}'.format(name))
-
         return data
 
     def write(self, name, config):
@@ -199,10 +189,19 @@ class rClone(Vault):
 
         update = False
 
+        if 'pass' in payload:
+            # Make sure the password is stored in obfuscated form
+            try:
+                # If this doesn't throw exception,
+                # it is obfuscated already, which is good !
+                _ = run(['rclone', 'reveal', payload['pass']]),
+            except:
+                payload['pass'] = run(['rclone', 'obscure', payload['pass']])
+
         if 'secrets' not in payload:
             # Initialize secrets for encrypted mountpoint
             payload['secrets'] = {
-                'pass': str(uuid.uuid4()),
+                'pass': run(['rclone', 'obscure', str(uuid.uuid4())]),
                 'path': str(uuid.uuid4())
             }
 
@@ -246,9 +245,6 @@ class rClone(Vault):
         config.read(filename)
 
         for name in config.sections():
-            if 'pass' in config['name']:
-                config['name']['obfuscated'] = config['name'].pop('pass')
-
             self.write(name, config[name])
 
     def md5_mount_filename(self, name):
@@ -322,7 +318,7 @@ class rClone(Vault):
             config[name] = {
                 'type': 'crypt',
                 'remote': name+'_src:'+secrets['path'], 
-                'password': run(['rclone', 'obscure', secrets['pass']]),
+                'password': secrets['pass'],
                 'filename_encryption': 'off',
                 'directory_name_encryption': 'false'
             }
