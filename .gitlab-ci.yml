@@ -27,6 +27,8 @@ validate:
 
 build:
   extends: .terraform:build
+  environment:
+    name: $TF_STATE_NAME
 
 deploy:
   extends: .terraform:deploy
