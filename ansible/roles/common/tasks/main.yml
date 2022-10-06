@@ -18,7 +18,7 @@
 - name: install gpg
   apt:
     name: gnupg
-    update_cache: yes    
+    update_cache: yes
 
 - name: set login banner
   copy:
