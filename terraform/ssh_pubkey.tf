@@ -1,8 +1,14 @@
-data "local_file" "my_pubkey" {
-  filename = pathexpand("~/.ssh/id_rsa.pub")
+variable "ssh_pubkey" {
+  type = string
+  default = ""
 }
 
-resource "aws_key_pair" "my_admin" {
-  key_name = var.key_name
-  public_key = data.local_file.my_pubkey.content
+resource "tls_private_key" "my_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "my_key_pair" {
+  key_name   = var.key_name
+  public_key = var.ssh_pubkey == "" ? tls_private_key.my_key.public_key_openssh : var.ssh_pubkey
 }
