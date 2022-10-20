@@ -23,7 +23,7 @@ services:
       - "traefik.http.routers.dashboard.tls.certresolver=le"
 {% if traefik_dashboard_basicauth_enable %}
       - "traefik.http.routers.dashboard.middlewares=dashboardAuth"
-      - "traefik.http.middlewares.dashboardAuth.basicauth.users={% for htpasswd in traefik_dashboard_basicauth_users %}{{ htpasswd }}{{ "," if not loop.last else "" }}{% endfor %}"
+      - "traefik.http.middlewares.dashboardAuth.basicauth.usersfile=/htpasswd"
 {% endif %}
 {% endif %}
 {% if traefik_global_https_redirect %}
@@ -35,6 +35,7 @@ services:
 {% endif %}
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
+      - "{{ traefik_directory }}/htpasswd:/htpasswd:ro"
       - "{{ traefik_directory }}/traefik.toml:/traefik.toml"
       - "{{ traefik_directory }}/conf.d:/conf.d"
 {% if traefik_acme_enable %}

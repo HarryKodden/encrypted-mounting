@@ -10,3 +10,5 @@ SRAM_OIDC_CLIENT_SECRET: '{{ lookup("ansible.builtin.env", "SRAM_OIDC_CLIENT_SEC
 
 SRAM_ADMIN_ACCESS_GROUP: '{{ lookup("ansible.builtin.env", "SRAM_ADMIN_ACCESS_GROUP", default="urn:mace:surf.nl:sram:group:...") }}'
 SRAM_SERVICE_BEARER_TOKEN: '{{ lookup("ansible.builtin.env", "SRAM_SERVICE_BEARER_TOKEN", default="<undefined>") }}'
+
+PROXY_ADMIN_PASSWORD: '{{ lookup("ansible.builtin.env", "PROXY_ADMIN_PASSWORD", default="admin") }}'
