@@ -120,25 +120,9 @@ SRAM_ADMIN_ACCESS_GROUP=urn:mace:surf.nl:sram:group <specify as the group as det
 # SRAM users need to be part of a SRAM Collaboration connected to this service
 # AND the users has to have created to SRAM Token for that same service.
 SRAM_SERVICE_BEARER_TOKEN=< token from SRAM collaboration, generate token within sram.>
-```
 
-## Proxy Admin credentials
-
-Generate an administrator user-password hash trough htpasswd on your own machine, choose your own password:
-
-```bash
-htpasswd -n admin
-```
-
-**Note**: the generated hash probably contains Dollar signs `$`, before deploying, you need to escape them by another dollar sign.
-
-Example: `admin:$apr1$V3Qyy8aO$Gf4MZhnsj6rCi4l6ztWSB/` needs to become: `admin:$$apr1$$V3Qyy8aO$$Gf4MZhnsj6rCi4l6ztWSB/`
-
-Copy the hash in `ansible/roles/traefik/defaults/main`:
-
-```code
-# Secrets...
-administrators: ["admin:$$apr1$$V3Qyy8aO$$Gf4MZhnsj6rCi4l6ztWSB/"]
+# This will be the administrator password to access the Traefik dashboard, eg "https://proxy.<domain>/dashboard/
+PROXY_ADMIN_PASSWORD=< Put your secret here !>
 ```
 
 ## Deployment

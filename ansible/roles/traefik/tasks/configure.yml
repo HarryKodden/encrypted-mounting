@@ -43,6 +43,18 @@
     source: pull
     tag: "{{ traefik_version }}"
 
+- name: Install latest passlib with pip
+  pip: name=passlib
+
+- name: Create htpasswd file for proxy administrator
+  community.general.htpasswd:
+    path: "{{ traefik_directory }}/htpasswd"
+    name: admin
+    password: "{{PROXY_ADMIN_PASSWORD }}"
+    owner: root
+    group: root
+    mode: 0640
+
 - name: Start traefik
   community.docker.docker_compose:
     project_src: "{{ traefik_directory }}"

@@ -21,13 +21,17 @@
     restarted: yes
   register: output
 
+- name: Pause for 1 minute to wait for vault to be operational
+  ansible.builtin.pause:
+    minutes: 1
+
 - name: Initialize vault
   community.docker.docker_container_exec:
     container: vault
     command: "vault operator init -key-shares={{ vault_shares }} -key-threshold={{ vault_treshold }} -format json"
   register: vault_init_results
   ignore_errors: yes
-  
+
 - name: Parse output of vault init
   set_fact:
     vault_init_parsed: "{{ vault_init_results.stdout | from_json }}"
@@ -103,7 +107,7 @@
   uri:
     url: "{{ vault_url }}/v1/auth/userpass/users/{{ admin_username }}"
     method: POST
-    body: "{ \"password\": \"{{ admin_password }}\", \"policies\": \"admin,default\"}"
+    body: '{ "password": "{{ admin_password }}", "policies": "admin,default"}'
     body_format: json
     status_code: 204
     headers:

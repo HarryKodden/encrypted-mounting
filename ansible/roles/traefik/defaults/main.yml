@@ -30,8 +30,5 @@ traefik_docker_expose_by_default: false
 traefik_acme_enable: true
 traefik_acme_email: "admin@{{ inventory_hostname }}"
 
-# Secrets...
-administrators: ["admin:$$apr1$$ZhWAQpWa$$P/VsdfzU7FlvqT.aJcIDT0"]
-
 # sso jwt secret
 sso_jwt_secret: rsndfpzApMhCL/tohrugkxinXt[6pkTQAWmZMLFyfqkTmqr2LHuZDDJefXaBGWJJ
