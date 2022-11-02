@@ -22,7 +22,8 @@ services:
       - CACHE_DIR=/cache
       - BASE_PATH=admin
       - PAM_VALIDATE_USERS=pam_sram_validate.so url={{ SRAM_URL }} token={{ SRAM_SERVICE_BEARER_TOKEN }} redis=redis
-#     - PAM_VALIDATE_USERS=pam_python.so /usr/local/bin/pam-validate.py url={{ SRAM_URL }} token={{ SRAM_SERVICE_BEARER_TOKEN }} redis=redis
+      - PAM_VALIDATE_USERS_ENTITLEMENT={{ PAM_VALIDATE_USERS_ENTITLEMENT }}
+redis=redis
     networks:
       - {{ traefik_docker_internal_network }}
     restart: unless-stopped
