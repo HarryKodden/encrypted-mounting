@@ -37,3 +37,4 @@ CACHE_DIR = os.environ.get('CACHE_DIR', '/tmp')
 # PAM Settings
 PAM_VALIDATE_ADMIN = os.environ.get('PAM_VALIDATE_ADMIN', '')
 PAM_VALIDATE_USERS = os.environ.get('PAM_VALIDATE_USERS', '')
+PAM_VALIDATE_USERS_ENTITLEMENT = os.environ.get('PAM_VALIDATE_USERS_ENTITLEMENT', '*')

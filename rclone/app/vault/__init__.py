@@ -387,8 +387,12 @@ class rClone(Vault):
                 )
 
             with open(self.pam_mount_filename(name), 'w') as f:
+                entitled = (settings.PAM_VALIDATE_USERS_ENTITLEMENT or "*").strip()
+                if entitled.startswith("lambda"):
+                    entitled = f"{eval(entitled)(name)}"
+                
                 f.write(
-                    f"auth required {settings.PAM_VALIDATE_USERS}\n"
+                    f"auth required {settings.PAM_VALIDATE_USERS} entitled={entitled}\n"
                     "account required pam_permit.so\n"
                 )
 
