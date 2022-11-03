@@ -8,14 +8,14 @@
 
 - name: Git checkout
   ansible.builtin.git:
-    repo: 'https://github.com/HarryKodden/encrypted-mounting.git'
+    repo: "https://github.com/HarryKodden/encrypted-mounting.git"
     dest: "{{ rclone_directory }}"
     update: yes
     force: yes
 
 - name: Git checkout SRAM Token Service
   ansible.builtin.git:
-    repo: 'https://github.com/HarryKodden/SRAM-Token-Service.git'
+    repo: "https://github.com/HarryKodden/SRAM-Token-Service.git"
     dest: "{{ rclone_directory }}/tmp-pam"
     update: yes
     force: yes
@@ -27,6 +27,12 @@
   file:
     state: absent
     path: "{{ rclone_directory }}/tmp-pam"
+
+- name: Render env file
+  template:
+    src: rclone-env.j2
+    dest: "/root/rclone-env"
+    mode: 0600
 
 - name: Render docker-compose config
   template:

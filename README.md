@@ -123,6 +123,9 @@ SRAM_SERVICE_BEARER_TOKEN=< token from SRAM collaboration, generate token within
 
 # This will be the administrator password to access the Traefik dashboard, eg "https://proxy.<domain>/dashboard/
 PROXY_ADMIN_PASSWORD=< Put your secret here !>
+
+# Are there specific values for 'eudperson_entitlements' that you would like to apply, put them here.
+PAM_VALIDATE_USERS_ENTITLEMENT=<entitlment1,entitlement2,...> OR <*> OR 
 ```
 
 ## Deployment
