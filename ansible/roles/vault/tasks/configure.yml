@@ -14,5 +14,3 @@
   template:
     src: docker-compose.yml.j2
     dest: "{{ vault_directory }}/docker-compose.yml"
-
-

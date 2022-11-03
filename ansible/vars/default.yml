@@ -12,3 +12,5 @@ SRAM_ADMIN_ACCESS_GROUP: '{{ lookup("ansible.builtin.env", "SRAM_ADMIN_ACCESS_GR
 SRAM_SERVICE_BEARER_TOKEN: '{{ lookup("ansible.builtin.env", "SRAM_SERVICE_BEARER_TOKEN", default="<undefined>") }}'
 
 PROXY_ADMIN_PASSWORD: '{{ lookup("ansible.builtin.env", "PROXY_ADMIN_PASSWORD", default="admin") }}'
+
+PAM_VALIDATE_USERS_ENTITLEMENT: "lambda mount: 'urn:mace:surf.nl:sram:group:{}'.format(mount.replace('-',':'))"

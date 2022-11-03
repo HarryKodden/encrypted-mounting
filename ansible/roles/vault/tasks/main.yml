@@ -113,3 +113,9 @@
     headers:
       Content-Type: application/json
       X-Vault-Token: "{{ vault_token }}"
+
+- name: Render env file
+  template:
+    src: vault-env.j2
+    dest: "/root/vault-env"
+    mode: 0600

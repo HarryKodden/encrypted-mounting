@@ -10,20 +10,16 @@ services:
       - mounts:/etc/mounts
       - cache:/cache
       - /mnt:/mnt:shared
+    env_file:
+      - /root/vault-env
+      - /root/rclone-env
     environment:
       - LOG_LEVEL={{ log_level }}
       - SERVER_URL=https://mount.{{ inventory_hostname }}
-      - VAULT_ADDR={{ vault_url }}
-      - VAULT_USER={{ admin_username }}
-      - VAULT_PASS={{ admin_password }}
       - USERS_CONFIG_PATH=/usr/local/etc
-      - ADMIN_ACCESS_GROUP={{ SRAM_ADMIN_ACCESS_GROUP }}
       - ADMIN_CONFIG_FILE=/etc/rclone.conf
       - CACHE_DIR=/cache
       - BASE_PATH=admin
-      - PAM_VALIDATE_USERS=pam_sram_validate.so url={{ SRAM_URL }} token={{ SRAM_SERVICE_BEARER_TOKEN }} redis=redis
-      - PAM_VALIDATE_USERS_ENTITLEMENT={{ PAM_VALIDATE_USERS_ENTITLEMENT }}
-redis=redis
     networks:
       - {{ traefik_docker_internal_network }}
     restart: unless-stopped
