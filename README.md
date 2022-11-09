@@ -9,7 +9,11 @@ Functional the mount process will look like this:
 ```plantuml
 ![assets/overall.iuml](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/HarryKodden/encrypted-mounting/main/assets/overall.iuml)```
 
-## Identified solutions
+## Design
+
+![Alt text](assets/design.png "Design")
+
+## Identified solutions / usecases
 
 - Safely collaborate and store privacy sensitive documents on research cloud.
 - Create a safe portal for applications to submit sensitive data that can only be investigated by active members.
@@ -125,7 +129,7 @@ SRAM_SERVICE_BEARER_TOKEN=< token from SRAM collaboration, generate token within
 PROXY_ADMIN_PASSWORD=< Put your secret here !>
 
 # Are there specific values for 'eudperson_entitlements' that you would like to apply, put them here.
-PAM_VALIDATE_USERS_ENTITLEMENT=<entitlment1,entitlement2,...> OR <*> OR 
+PAM_VALIDATE_USERS_ENTITLEMENT=<entitlment1,entitlement2,...> OR <*> OR
 ```
 
 ## Deployment
