@@ -8,17 +8,17 @@ variable "instance_name" {
 
 variable "region" {
   description = "AWS region to deploy"
-  default = "us-east-1"
+  default = "eu-west-1"
 }
 
 variable "availability_zone" {
   description = "AWS Availability Zone"
-  default = "us-east-1a"
+  default = "eu-west-1a"
 }
 
 variable "ami" {
   description = "Ubuntu Server 20.04 LTS (HVM), SSD Volume Type"
-  default = "ami-0149b2da6ceec4bb0"
+  default = "ami-05147510eb2885c80"
 }
 
 variable "instance_type" {
