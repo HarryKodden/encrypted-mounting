@@ -1,6 +1,6 @@
 ---
 # Install
-vault_version: "latest"
+vault_version: "1.13.3"
 vault_directory: "/opt/vault"
 
 # General settings
