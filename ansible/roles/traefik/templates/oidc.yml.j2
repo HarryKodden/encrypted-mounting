@@ -8,12 +8,12 @@ vouch:
   allowAllUsers: true
 
   jwt:
-    secret: {{ sso_jwt_secret }}
+    secret: {{ auth_jwt_secret }}
     issuer: Vouch
     compress: true
 
   cookie:
-    name: sso-cookie
+    name: auth-cookie
     secure: true
     domain: {{ inventory_hostname }}
     sameSite: lax
@@ -40,4 +40,4 @@ oauth:
     - email
     - eduperson_entitlement
   callback_urls:
-    - {{ traefik_url }}/sso/auth
+    - {{ inventory_hostname }}/oidc/auth

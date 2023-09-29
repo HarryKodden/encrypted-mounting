@@ -1,17 +1,17 @@
-location /sso {
-    proxy_pass http://{{ sso_ip_address }}:9090;
+location /oidc {
+    proxy_pass http://{{ oidc_ip_address }}:9090;
 
     proxy_pass_request_body off;
     proxy_set_header Host $http_host;
     proxy_set_header Content-Length "";
 
-    # these return values are passed to the @sso_401 call
+    # these return values are passed to the @auth_401 call
     auth_request_set $auth_resp_jwt $upstream_http_x_vouch_jwt;
     auth_request_set $auth_resp_err $upstream_http_x_vouch_err;
     auth_request_set $auth_resp_failcount $upstream_http_x_vouch_failcount;
 }
 
 # If the user is not logged in, redirect them to Vouch's login URL
-location @sso_401 {
-    return 302 {{ traefik_url }}/sso/login?url=https://$http_host$request_uri;
+location @auth_401 {
+    return 302 https://{{ inventory_hostname }}/oidc/login?url=https://$http_host$request_uri;
 }
