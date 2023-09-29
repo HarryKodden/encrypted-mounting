@@ -4,8 +4,7 @@ traefik_version: "latest"
 traefik_directory: "/opt/traefik"
 
 # General settings
-traefik_domain: "proxy.{{ inventory_hostname }}"
-traefik_url: "https://{{ traefik_domain }}"
+traefik_path: "proxy"
 traefik_log_level: "ERROR"
 traefik_accesslog_enable: false
 
@@ -30,5 +29,5 @@ traefik_docker_expose_by_default: false
 traefik_acme_enable: true
 traefik_acme_email: "admin@{{ inventory_hostname }}"
 
-# sso jwt secret
-sso_jwt_secret: rsndfpzApMhCL/tohrugkxinXt[6pkTQAWmZMLFyfqkTmqr2LHuZDDJefXaBGWJJ
+# auth jwt secret
+auth_jwt_secret: rsndfpzApMhCL/tohrugkxinXt[6pkTQAWmZMLFyfqkTmqr2LHuZDDJefXaBGWJJ

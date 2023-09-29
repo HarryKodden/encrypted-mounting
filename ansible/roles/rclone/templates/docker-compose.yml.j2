@@ -15,7 +15,7 @@ services:
       - /root/rclone-env
     environment:
       - LOG_LEVEL={{ log_level }}
-      - SERVER_URL=https://mount.{{ inventory_hostname }}
+      - SERVER_URL=https://{{ inventory_hostname }}
       - USERS_CONFIG_PATH=/usr/local/etc
       - ADMIN_CONFIG_FILE=/etc/rclone.conf
       - CACHE_DIR=/cache
@@ -46,12 +46,12 @@ services:
           proxy_pass http://rclone:5572;
         }
 
-        include sso.conf;
+        include oidc.conf;
 
         location /$$BASE_PATH {  
-          error_page 401 = @sso_401;
+          error_page 401 = @auth_401;
 
-          auth_request /sso/validate;
+          auth_request /oidc/validate;
 
           auth_request_set \$$entitlements  \$$upstream_http_x_vouch_idp_claims_eduperson_entitlement;
 
@@ -95,7 +95,7 @@ services:
     container_name: mount
     volumes:
       - mounts:/etc/mounts
-      - ./sso.conf:/etc/nginx/sso.conf:ro
+      - ./oidc.conf:/etc/nginx/oidc.conf:ro
     networks:
       - {{ traefik_docker_internal_network }}
       - {{ traefik_docker_external_network }}
@@ -103,7 +103,7 @@ services:
       - redis
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mount.rule=Host(`mount.{{ inventory_hostname }}`)"
+      - "traefik.http.routers.mount.rule=Host(`{{ inventory_hostname }}`) && (PathPrefix(`/admin`) || PathPrefix(`/webdav`))"
       - "traefik.http.routers.mount.tls=true"
       - "traefik.http.routers.mount.tls.certresolver=le"
       - "traefik.http.routers.mount.entrypoints=https"
