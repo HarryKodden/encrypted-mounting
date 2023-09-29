@@ -3,7 +3,7 @@ FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && apt-get install -y \
-    nginx nginx-full libnginx-mod-http-lua \
+    nginx nginx-full libnginx-mod-http-lua libnginx-mod-http-fancyindex \
     wget cron curl vim git sudo \
     ca-certificates autoconf build-essential make \
     libpam-dev libcurl4-gnutls-dev libhiredis-dev libssl-dev \

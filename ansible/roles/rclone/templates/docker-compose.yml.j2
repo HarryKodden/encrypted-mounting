@@ -103,7 +103,7 @@ services:
       - redis
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mount.rule=Host(`{{ inventory_hostname }}`) && (PathPrefix(`/admin`) || PathPrefix(`/webdav`))"
+      - "traefik.http.routers.mount.rule=Host(`{{ inventory_hostname }}`) && (PathPrefix(`/`) ||PathPrefix(`/admin`) || PathPrefix(`/webdav`))"
       - "traefik.http.routers.mount.tls=true"
       - "traefik.http.routers.mount.tls.certresolver=le"
       - "traefik.http.routers.mount.entrypoints=https"
