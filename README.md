@@ -159,7 +159,7 @@ terraform apply
 > Normally you do not need to operate Vault.
 > If you do need to authenticate, consult the administrator of this installation. He holds the key material in his secure /root folder.x
 >
-> ## https://your-domain.com/dashboard
+> ## https://your-domain.com/dashboard/
 >
 > - Your username is admin
 > - Your password is the one you choose during step X
