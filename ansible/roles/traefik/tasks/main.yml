@@ -14,13 +14,13 @@
   vars:
     jmesquery: "container.NetworkSettings.Networks.{{ traefik_docker_external_network }}.IPAddress"
 
-- name: inspect sso
+- name: inspect oidc client
   docker_container_info:
-    name: sso
-  register: sso_container_details
+    name: oidc
+  register: oidc_container_details
 
-- name: get sso IP address
+- name: get oidc IP address
   set_fact:
-    sso_ip_address: "{{ sso_container_details | json_query(jmesquery) }}"
+    oidc_ip_address: "{{ oidc_container_details | json_query(jmesquery) }}"
   vars:
     jmesquery: "container.NetworkSettings.Networks.{{ traefik_docker_internal_network }}.IPAddress"

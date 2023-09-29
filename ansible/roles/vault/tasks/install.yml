@@ -6,3 +6,9 @@
   with_items:
     - "{{ vault_directory }}"
     - "{{ vault_directory }}/etc"
+
+- name: Create vault secrets directory
+  file:
+    path: "{{ vault_master_secrets }}"
+    state: "directory"
+    mode: "0600"

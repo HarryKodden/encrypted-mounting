@@ -2,11 +2,10 @@
 # Install
 vault_version: "1.13.3"
 vault_directory: "/opt/vault"
+vault_master_secrets: "/root/vault-master-secrets"
 
 # General settings
-vault_domain: "vault.{{ inventory_hostname }}"
 vault_port: 8200
-vault_url: "https://{{ vault_domain }}"
 vault_log_level: "ERROR"
 vault_accesslog_enable: false
 vault_shares: 5

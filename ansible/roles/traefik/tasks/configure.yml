@@ -4,10 +4,10 @@
     src: traefik.toml.j2
     dest: "{{ traefik_directory }}/traefik.toml"
 
-- name: Render sso config
+- name: Render oidc config
   template:
-    src: sso.yml.j2
-    dest: "{{ traefik_directory }}/sso.yml"
+    src: oidc.yml.j2
+    dest: "{{ traefik_directory }}/oidc.yml"
 
 - name: Render docker-compose config
   template:

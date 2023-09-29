@@ -17,13 +17,13 @@ services:
     labels:
       - "traefik.enable=true"
 {% if traefik_dashboard_enable %}
-      - "traefik.http.routers.dashboard.rule=Host(`{{ traefik_domain }}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      - "traefik.http.routers.dashboard.rule=Host(`{{ inventory_hostname }}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.tls.certresolver=le"
 {% if traefik_dashboard_basicauth_enable %}
-      - "traefik.http.routers.dashboard.middlewares=dashboardAuth"
-      - "traefik.http.middlewares.dashboardAuth.basicauth.usersfile=/htpasswd"
+      - "traefik.http.routers.dashboard.middlewares=dashboardauth"
+      - "traefik.http.middlewares.dashboardauth.basicauth.usersfile=/htpasswd"
 {% endif %}
 {% endif %}
 {% if traefik_global_https_redirect %}
@@ -42,27 +42,27 @@ services:
       - "{{ traefik_directory }}/acme.json:/acme.json"
 {% endif %}
 
-  sso:
-    container_name: sso
+  oidc:
+    container_name: oidc
     image: quay.io/vouch/vouch-proxy
     restart: unless-stopped
     volumes:
-      - ./sso.yml:/config/config.yml:ro
+      - ./oidc.yml:/config/config.yml:ro
     networks:
       - internal
       - external
     environment:
-      - VOUCH_DOCUMENT_ROOT=/sso
+      - VOUCH_DOCUMENT_ROOT=/oidc
     logging:
       driver: "none"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sso.rule=Host(`{{ traefik_domain }}`) && PathPrefix(`/sso`)"
-      - "traefik.http.routers.sso.tls=true"
-      - "traefik.http.routers.sso.tls.certresolver=le"
-      - "traefik.http.routers.sso.entrypoints=https"
-      - "traefik.http.routers.sso.service=sso"
-      - "traefik.http.services.sso.loadbalancer.server.port=9090"
+      - "traefik.http.routers.oidc.rule=Host(`{{ inventory_hostname }}`) && PathPrefix(`/oidc`)"
+      - "traefik.http.routers.oidc.tls=true"
+      - "traefik.http.routers.oidc.tls.certresolver=le"
+      - "traefik.http.routers.oidc.entrypoints=https"
+      - "traefik.http.routers.oidc.service=oidc"
+      - "traefik.http.services.oidc.loadbalancer.server.port=9090"
 
 networks:
   {{ traefik_docker_external_network }}:

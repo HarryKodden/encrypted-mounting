@@ -20,7 +20,7 @@ services:
       - ./file:/vault/file
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.vault.rule=Host(`{{ vault_domain }}`)"
+      - "traefik.http.routers.vault.rule=Host(`{{ inventory_hostname }}`)"
       - "traefik.http.routers.vault.tls=true"
       - "traefik.http.routers.vault.tls.certresolver=le"
       - "traefik.http.routers.vault.entrypoints=https"

@@ -83,7 +83,6 @@ make sure you have your own domain name pointed at the ip-address of your machin
 
 ```bash
 your-domain.com    --> IP-address
-*.your-domain.com   --> IP-address
 ```
 
 You need to set the registered domain name and ansible_user in `./ansible/inventory/workspace`, For easy use, register your Research Cloud user name at ansible_user. This user is used for deployment and allready had the appropriate ssh keys.
@@ -154,21 +153,20 @@ terraform apply
 
 ## After deployment the following endpoints are available:
 
-> ## vault.your-domain.com
->
-> - Choose Token as login method
-> - Get your password from the Research Cloud VM from: `/opt/vault/etc/rootkey`
->
-> This brings you to the vault which is storing all sensitive encryption keys
+> ## https://your-domain.com
 
-> ## proxy.your-domain.com/dashboard
+> This is the Vault main page.
+> Normally you do not need to operate Vault.
+> If you do need to authenticate, consult the administrator of this installation. He holds the key material in his secure /root folder.x
+>
+> ## https://your-domain.com/dashboard
 >
 > - Your username is admin
 > - Your password is the one you choose during step X
 >
 > This interface brings you to the proxy portal where you can inspect how all traffic is routed.
 
-> ## mount.your-domain.com/admin
+> ## https://your-domain.com/admin
 >
 > - Your username is your SRAM username, you can find it in your profile.
 > - Your login will be handled bij SRAM itself.
@@ -176,13 +174,13 @@ terraform apply
 > This interface brings you to the Rclone admin panel. From here you will set up your encrypted folders by attaching external cloud storage. Rclone supports over 40 cloud storage providers, so you are not limited to Research Cloud but you could also mount google drive or onedrive.
 > Every `encrypted mount` is configured by a config file, this is either created by a step by step interactive way (on this endpoint) or plain text (the next endpoint). The name of this configuration block will also be used on the webdav mount later on.
 
-> ## mount.your-domain.com/admin/api/doc
+> ## https://your-domain.com/admin/api/doc
 >
 > This endpoint brings you to a swagger documentation page where you can test out the API of the systen. This is particculary useful to quickly download or test your configuration files.
 >
 > - Authentication is handled in the same way as the admin panel.
 
-> ## mount.your-domain.com/webdav/your-rclone-config-name
+> ## https://your-domain.com/webdav/your-rclone-config-name
 >
 > - Your username is your SRAM username, you can find it in your profile.
 > - Your password is a token from SRAM. To get it, log in to SRAM and go to _Tokens_ and generate one, copy it and carefully store it in a password manager, you will not be able to see it again.

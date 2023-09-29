@@ -30,7 +30,7 @@
     container: vault
     command: "vault operator init -key-shares={{ vault_shares }} -key-threshold={{ vault_treshold }} -format json"
   register: vault_init_results
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Parse output of vault init
   set_fact:
@@ -39,19 +39,21 @@
 
 - name: Write unseal keys to files
   copy:
-    dest: "{{ vault_directory }}/etc/unseal_key_{{ item.0 }}"
+    dest: "{{ vault_master_secrets }}/unseal_key_{{ item.0 }}"
     content: "{{ item.1 }}"
+    mode: 600
   with_indexed_items: "{{ vault_init_parsed.unseal_keys_hex }}"
   when: vault_init_results.failed == false
 
 - name: Write root token to file
   copy:
     content: "{{ vault_init_parsed.root_token }}"
-    dest: "{{ vault_directory }}/etc/rootkey"
+    dest: "{{ vault_master_secrets }}/rootkey"
+    mode: 600
   when: vault_init_results.failed == false
 
 - name: Reading unseal key contents
-  command: "cat {{ vault_directory }}/etc/unseal_key_{{ item }}"
+  command: "cat {{ vault_master_secrets }}/unseal_key_{{ item }}"
   register: unseal_keys
   with_sequence: start=1 end={{ vault_treshold }}
 
@@ -60,11 +62,11 @@
     container: vault
     command: "vault operator unseal {{ item.stdout }}"
   with_items: "{{ unseal_keys.results }}"
-  ignore_errors: yes
+  ignore_errors: true
   register: output
 
 - name: Reading root token
-  command: "cat {{ vault_directory }}/etc/rootkey"
+  command: "cat {{ vault_master_secrets }}/rootkey"
   register: root_token
 
 - name: Set vault_token
@@ -73,15 +75,15 @@
 
 - name: Enable secret engine...
   shell: "docker exec -e VAULT_TOKEN={{ vault_token }} vault vault secrets enable -version=2 -path=secret kv"
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Enable userpass auth method...
   shell: "docker exec -e VAULT_TOKEN={{ vault_token }} vault vault auth enable userpass"
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Check Vault health...
   uri:
-    url: "{{ vault_url }}/v1/sys/health"
+    url: "https://{{ inventory_hostname }}/v1/sys/health"
   register: health
 
 - name: Show health...
@@ -90,7 +92,7 @@
 
 - name: Create admin policy...
   uri:
-    url: "{{ vault_url }}/v1/sys/policy/admin"
+    url: "https://{{ inventory_hostname }}/v1/sys/policy/admin"
     method: POST
     body: "{{ lookup('file','admin-policy.json') }}"
     body_format: json
@@ -105,7 +107,7 @@
 
 - name: Create admin user...
   uri:
-    url: "{{ vault_url }}/v1/auth/userpass/users/{{ admin_username }}"
+    url: "https://{{ inventory_hostname }}/v1/auth/userpass/users/{{ admin_username }}"
     method: POST
     body: '{ "password": "{{ admin_password }}", "policies": "admin,default"}'
     body_format: json
