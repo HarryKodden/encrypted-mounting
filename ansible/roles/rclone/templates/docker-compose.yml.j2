@@ -103,19 +103,30 @@ services:
       - redis
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mount.rule=Host(`{{ inventory_hostname }}`) && (PathPrefix(`/`) ||PathPrefix(`/admin`) || PathPrefix(`/webdav`))"
+      - "traefik.http.routers.mount.rule=Host(`{{ inventory_hostname }}`) && (Path(`/`) || PathPrefix(`/admin`) || PathPrefix(`/webdav`))"
       - "traefik.http.routers.mount.tls=true"
       - "traefik.http.routers.mount.tls.certresolver=le"
       - "traefik.http.routers.mount.entrypoints=https"
       - "traefik.http.routers.mount.service=mount"
       - "traefik.http.services.mount.loadbalancer.server.port=80"
 
+
+  php-fpm:
+    image: php:8-fpm
+    environment:
+      - url=https://{{ inventory_hostname }}
+    volumes:
+      - mounts:/etc/mounts
+      - ./index.php:/var/www/html/index.php
+    networks:
+      - {{ traefik_docker_internal_network }}
+    
 volumes:
   mounts:
   cache:
 
 networks:
-  {{ traefik_docker_external_network }}:
+  {{ traefik_docker_external_network }}
     external:
       name: {{ traefik_docker_external_network }}
   {{ traefik_docker_internal_network }}:
