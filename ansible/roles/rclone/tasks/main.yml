@@ -44,6 +44,16 @@
     src: oidc.conf.j2
     dest: "{{ rclone_directory }}/oidc.conf"
 
+- name: copy mount.conf
+  copy:
+    src: files/mount.conf
+    dest: "{{ rclone_directory }}/mount.conf"
+
+- name: copy index.php
+  copy:
+    src: files/index.php
+    dest: "{{ rclone_directory }}/index.php"
+
 - name: Stop rclone
   community.docker.docker_compose:
     project_src: "{{ rclone_directory }}"

@@ -95,7 +95,9 @@ services:
     container_name: mount
     volumes:
       - mounts:/etc/mounts
+      - ./mount.conf:/etc/nginx/conf.d/mount.conf:ro
       - ./oidc.conf:/etc/nginx/oidc.conf:ro
+      - ./index.php:/var/www/html/index.php
     networks:
       - {{ traefik_docker_internal_network }}
       - {{ traefik_docker_external_network }}
@@ -126,7 +128,7 @@ volumes:
   cache:
 
 networks:
-  {{ traefik_docker_external_network }}
+  {{ traefik_docker_external_network }}:
     external:
       name: {{ traefik_docker_external_network }}
   {{ traefik_docker_internal_network }}:
