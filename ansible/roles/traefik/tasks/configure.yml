@@ -47,7 +47,7 @@
   pip: name=passlib
 
 - name: Create htpasswd file for proxy administrator
-  community.general.htpasswd:
+  htpasswd:
     path: "{{ traefik_directory }}/htpasswd"
     name: admin
     password: "{{PROXY_ADMIN_PASSWORD }}"
@@ -56,7 +56,7 @@
     mode: 0640
 
 - name: Start traefik
-  community.docker.docker_compose:
+  docker_compose:
     project_src: "{{ traefik_directory }}"
     state: present
     build: yes

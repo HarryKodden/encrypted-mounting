@@ -4,7 +4,7 @@
 - include: configure.yml
 
 - name: Stop vault
-  community.docker.docker_compose:
+  docker_compose:
     project_src: "{{ vault_directory }}"
     stopped: yes
   register: output
@@ -16,7 +16,7 @@
   when: vault_clean_data
 
 - name: start vault
-  community.docker.docker_compose:
+  docker_compose:
     project_src: "{{ vault_directory }}"
     restarted: yes
   register: output
@@ -26,9 +26,7 @@
     minutes: 1
 
 - name: Initialize vault
-  community.docker.docker_container_exec:
-    container: vault
-    command: "vault operator init -key-shares={{ vault_shares }} -key-threshold={{ vault_treshold }} -format json"
+  command: "docker exec vault vault operator init -key-shares={{ vault_shares }} -key-threshold={{ vault_treshold }} -format json"
   register: vault_init_results
   ignore_errors: true
 
@@ -58,9 +56,7 @@
   with_sequence: start=1 end={{ vault_treshold }}
 
 - name: Unseal vault
-  community.docker.docker_container_exec:
-    container: vault
-    command: "vault operator unseal {{ item.stdout }}"
+  command: "docker exec vault vault operator unseal {{ item.stdout }}"
   with_items: "{{ unseal_keys.results }}"
   ignore_errors: true
   register: output
@@ -74,11 +70,11 @@
     vault_token: "{{ root_token.stdout }}"
 
 - name: Enable secret engine...
-  shell: "docker exec -e VAULT_TOKEN={{ vault_token }} vault vault secrets enable -version=2 -path=secret kv"
+  command: "docker exec -e VAULT_TOKEN={{ vault_token }} vault vault secrets enable -version=2 -path=secret kv"
   ignore_errors: true
 
 - name: Enable userpass auth method...
-  shell: "docker exec -e VAULT_TOKEN={{ vault_token }} vault vault auth enable userpass"
+  command: "docker exec -e VAULT_TOKEN={{ vault_token }} vault vault auth enable userpass"
   ignore_errors: true
 
 - name: Check Vault health...
