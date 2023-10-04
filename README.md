@@ -157,8 +157,23 @@ terraform apply
 
 > ## https://your-domain.com
 
-> This is the Vault main page.
+> This is the home page of the service.
+> Links are presented to help you find your way.
+> The Admin link is for the Service Administrator to configure the mountpoints.
+> All the mountpoints that are configured, are listed as well so that users can navigate to these mountpoints And/Or copy the mountpoint URL to their OSX Finder (Cmd-K) or Windows Explorer.
+>
+> Admin Users need to authenticate with SRAM and need to be member of the SRAM Group that is specificied during deployment with key **SRAM_ADMIN_ACCESS_GROUP**
+>
+> Uers can oly authenticate with the WebDAV mountpoints using basic authentication, where:
+>
+> - Username is your SRAM Username
+> - Password is your SRAM Token that you have registered in SRAM for this service
+>
+> ## https://your-domain.com/ui
+
+> This is the Vault portal page.
 > Normally you do not need to operate Vault.
+> In production it is adviced not even activate the vault UI at all.
 > If you do need to authenticate, consult the administrator of this installation. He holds the key material in his secure /root folder.x
 >
 > ## https://your-domain.com/dashboard/
