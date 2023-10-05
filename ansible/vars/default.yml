@@ -2,8 +2,6 @@
 admin_username: admin
 log_level: ERROR
 
-inventory_hostname: '{{ lookup("ansible.builtin.env", "workspace_fqdn", default="localhost") }}'
-
 SRAM_URL: '{{ lookup("ansible.builtin.env", "SRAM_URL", default="https://sram.surf.nl") }}'
 
 SRAM_OIDC_BASE_URL: '{{ lookup("ansible.builtin.env", "SRAM_OIDC_BASE_URL", default="https://proxy.sram.surf.nl") }}'
