@@ -1,6 +1,5 @@
 location /oidc {
-#   proxy_pass http://{{ oidc_ip_address }}:9090;
-    proxy_pass http://oidc:9090;
+    proxy_pass http://{{ oidc_ip_address }}:9090;
 
     proxy_pass_request_body off;
     proxy_set_header Host $http_host;
