@@ -8,7 +8,7 @@
     name: traefik
   register: traefik_container_details0
   # want to remove the task from the playbook.
-  when: 0 > 1
+  # when: 0 > 1
 
 - name: get traefik IP address
   set_fact:
@@ -16,14 +16,14 @@
   vars:
     jmesquery: "container.NetworkSettings.Networks.{{ traefik_docker_external_network }}.IPAddress"
   # want to remove the task from the playbook.
-  when: 0 > 1
+  # when: 0 > 1
 
 - name: inspect oidc client
   docker_container_info:
     name: oidc
   register: oidc_container_details
   # want to remove the task from the playbook.
-  when: 0 > 1
+  # when: 0 > 1
 
 - name: get oidc IP address
   set_fact:
@@ -31,4 +31,4 @@
   vars:
     jmesquery: "container.NetworkSettings.Networks.{{ traefik_docker_internal_network }}.IPAddress"
   # want to remove the task from the playbook.
-  when: 0 > 1
+  # when: 0 > 1
