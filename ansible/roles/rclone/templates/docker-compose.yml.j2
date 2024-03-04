@@ -57,7 +57,7 @@ services:
 
           access_by_lua_block {
               entitlements = ngx.var.entitlements;
-              if not entitlements or not entitlements:find("$$ADMIN_ACCESS_GROUP") then
+              if not entitlements or not entitlements:find("$$ADMIN_ACCESS_GROUP", 1, true) then
                   ngx.exit(ngx.HTTP_FORBIDDEN)
               end
           }
