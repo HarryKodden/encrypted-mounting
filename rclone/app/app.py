@@ -4,7 +4,7 @@ import logging
 import logging.config
 import traceback
 
-from flask import Flask, Blueprint, url_for
+from flask import Flask, Blueprint, url_for, request
 from flask_cors import CORS
 
 from functools import wraps
@@ -43,6 +43,11 @@ def has_no_empty_params(rule):
     arguments = rule.arguments if rule.arguments is not None else ()
     return len(defaults) >= len(arguments)
 
+
+@app.before_request
+def before_request():
+    for k,v in request.headers.items():
+        log.debug(f"[APP] Header: {k} --> {v}")
 
 @app.after_request
 def after_request(response):

@@ -6,3 +6,4 @@ flask-cors
 Flask
 pika
 markupsafe==2.0.1
+pycrypto

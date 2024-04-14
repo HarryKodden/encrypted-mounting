@@ -54,6 +54,7 @@ services:
           auth_request /oidc/validate;
 
           auth_request_set \$$entitlements  \$$upstream_http_x_vouch_idp_claims_eduperson_entitlement;
+          auth_request_set \$$uid  \$$upstream_http_x_vouch_idp_claims_uid;
 
           access_by_lua_block {
               entitlements = ngx.var.entitlements;

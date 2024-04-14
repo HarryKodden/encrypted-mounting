@@ -3,6 +3,7 @@ import logging
 import settings
 import werkzeug
 import uuid
+import json
 
 from flask import request, send_from_directory
 from flask_restplus import Resource, fields, reqparse
@@ -11,18 +12,107 @@ from api import api, token_required, remote_user_required
 
 from vault import rClone
 
-log = logging.getLogger(__name__)
+from api.config.crypto import encrypt, decrypt
+
+log = logging.getLogger()
 
 ns = api.namespace('config', description='Operations related to services')
 
 my_rclone = rClone()
 
 file_upload = reqparse.RequestParser()
-file_upload.add_argument('rclone_config_file',  
-                         type=werkzeug.datastructures.FileStorage, 
-                         location='files', 
-                         required=True, 
-                         help='Config file')
+file_upload.add_argument(
+        'rclone_config_file',  
+        type=werkzeug.datastructures.FileStorage, 
+        location='files', 
+        required=True, 
+        help='Config file'
+)
+
+crypted_data = reqparse.RequestParser()
+crypted_data.add_argument(
+        'crypted_data',
+        type=str,
+        required=True, 
+        help='enter crypted data'
+)
+
+
+@ns.route('/recover')
+class Recover(Resource):
+
+    def get(self):
+        """
+        Returns crypted configuration.
+        """
+        result = {}
+
+        try:
+            # collect passphrases for all administrators
+            passphrases = my_rclone.get_passphrases()
+
+            # exclude me!
+            passphrases.pop(
+                request.headers['Remote-User'].replace('"','')
+            )
+
+            # Collect configurations and encrypt with administrators passphrase
+            for admin, passphrase in passphrases.items():
+                data = {}
+
+                for mount in my_rclone.dump().keys():
+                    data[mount] = my_rclone.read(mount, True)['secrets']
+
+                result[admin] = encrypt(passphrase.encode(), json.dumps(data).encode())
+        except Exception as e:
+            return str(e), 400
+
+        return result
+
+    @api.expect(crypted_data)
+    def put(self):
+        """
+        Returns decrypted data of given crypted input.
+        """
+        try:
+            args = crypted_data.parse_args()
+
+            me = request.headers['Remote-User'].replace('"','')
+
+            passphrase = my_rclone.passphrase(me, reset=False)['passphrase']
+
+            return json.loads(decrypt(passphrase.encode(), args['crypted_data']))
+        except:
+            return {}
+
+
+@ns.route('/passphrase')
+class PassPhrase(Resource):
+
+    def get(self):
+        """
+        Get admin passphrase from Vault
+        """
+        admin = request.headers['Remote-User'].replace('"', '')
+
+        return my_rclone.passphrase(admin, reset=False)
+        try:
+            admin = request.headers['Remote-User'].replace('"', '')
+
+            return my_rclone.passphrase(admin, reset=False)
+        except:
+            return {}
+
+    def put(self):
+        """
+        Set admin passphrase from Vault
+        """
+        try:
+            admin = request.headers['Remote-User'].replace('"', '')
+
+            return my_rclone.passphrase(admin, reset=True)
+        except:
+            return {}
 
 
 @ns.route('/dump')

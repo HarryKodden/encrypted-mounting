@@ -232,6 +232,45 @@ class rClone(Vault):
     def dump(self):
         return self.mounts()
 
+    def passphrase(self, admin, reset=False):
+        if (reset):
+
+            payload={ 'passphrase': str(uuid.uuid4()) }
+
+            (rc, _) = self.api(
+                "/v1/secret/data/admin/{}".format(admin), 
+                 method="POST", 
+                payload={ 'data': payload }
+            )
+        else:
+            (rc, data) = self.api(
+                "/v1/secret/data/admin/{}".format(admin), 
+                method='GET'
+            )
+            payload = json.loads(data)['data']['data']
+
+        if rc != 200:
+            raise Exception("status code: {}".format(rc))
+
+        return payload
+
+    def get_passphrases(self):
+        result = {}
+
+        (rc, data) = self.api(
+            "/v1/secret/metadata/admin",
+            method="LIST"
+        )
+
+        if rc == 200:
+            for admin in json.loads(data)['data']['keys']:
+                try:
+                    result[admin] = self.passphrase(admin, reset=False)['passphrase']
+                except:
+                    pass
+
+        return result
+
     def get_config(self, filename):
 
         config = configparser.ConfigParser()
