@@ -48,22 +48,15 @@ class Recover(Resource):
         result = {}
 
         try:
-            # collect passphrases for all administrators
-            passphrases = my_rclone.get_passphrases()
+            me = request.headers['Remote-User'].replace('"','')
 
-            # exclude me!
-            passphrases.pop(
-                request.headers['Remote-User'].replace('"','')
-            )
+            passphrase = my_rclone.passphrase(me, reset=False)['passphrase']
 
-            # Collect configurations and encrypt with administrators passphrase
-            for admin, passphrase in passphrases.items():
-                data = {}
+            data = {}
+            for mount in my_rclone.dump().keys():
+                data[mount] = my_rclone.read(mount, True)['secrets']
 
-                for mount in my_rclone.dump().keys():
-                    data[mount] = my_rclone.read(mount, True)['secrets']
-
-                result[admin] = encrypt(passphrase.encode(), json.dumps(data).encode())
+            return encrypt(passphrase.encode(), json.dumps(data).encode())
         except Exception as e:
             return str(e), 400
 
@@ -91,11 +84,8 @@ class PassPhrase(Resource):
 
     def get(self):
         """
-        Get admin passphrase from Vault
+        Get my passphrase from Vault
         """
-        admin = request.headers['Remote-User'].replace('"', '')
-
-        return my_rclone.passphrase(admin, reset=False)
         try:
             admin = request.headers['Remote-User'].replace('"', '')
 
@@ -105,7 +95,7 @@ class PassPhrase(Resource):
 
     def put(self):
         """
-        Set admin passphrase from Vault
+        (Re-)Set my passphrase in Vault
         """
         try:
             admin = request.headers['Remote-User'].replace('"', '')
@@ -181,6 +171,7 @@ mount_parameters = api.model('mount_parameters', {
     'parameters': fields.Raw(required=True, description='Mount Parameters')
 })
 
+
 @ns.route('/get', methods=['POST'])
 class get(Mount):
 
@@ -207,6 +198,7 @@ class create(Mount):
 
         return super().post(mount, payload={ 'config' : config })
 
+
 @ns.route('/update', methods=['POST'])
 class update(Mount):
 
@@ -221,6 +213,7 @@ class update(Mount):
 
         return super().post(mount, payload={ 'config' : config })
 
+
 @ns.route('/delete', methods=['POST'])
 class delete(Mount):
 
@@ -232,6 +225,7 @@ class delete(Mount):
 
         return self.delete(api.payload['name'])
 
+
 @ns.route('/listremotes',methods=['POST'])
 class ListRemotes(Config):
 
@@ -240,6 +234,7 @@ class ListRemotes(Config):
         list remotes
         """
         return { "remotes": list(super().post().keys()) }
+
 
 @ns.route('/export',methods=['GET'])
 class Export(Config):
@@ -258,6 +253,7 @@ class Export(Config):
             return str(e), 401
         finally:
             os.remove(dir+'/'+file)
+
 
 @ns.route('/import', methods=['POST'])
 class Import(ListRemotes):

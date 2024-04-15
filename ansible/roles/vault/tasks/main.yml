@@ -1,7 +1,7 @@
 ---
-- include: install.yml
+- include_tasks: install.yml
 
-- include: configure.yml
+- include_tasks: configure.yml
 
 - name: Stop vault
   docker_compose:
