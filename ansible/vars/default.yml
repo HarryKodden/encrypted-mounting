@@ -2,7 +2,7 @@
 admin_username: admin
 log_level: ERROR
 
-sram_urn_prefix: "urn:mace:surf.nl:sram:group:"
+sram_urn_prefix: "urn:mace:surf.nl:sram:group"
 
 SRAM_URL: '{{ lookup("ansible.builtin.env", "SRAM_URL", default="https://sram.surf.nl") }}'
 
