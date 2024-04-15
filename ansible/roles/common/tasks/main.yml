@@ -20,6 +20,11 @@
     name: gnupg
     update_cache: yes
 
+- name: install jmespath
+  apt:
+    name: python3-jmespath
+    update_cache: yes
+
 - name: set login banner
   copy:
     src: issue
@@ -35,6 +40,3 @@
     owner: root
     group: root
     mode: 0644
-
-- name: install required pip modules
-  shell: pip install jmespath
