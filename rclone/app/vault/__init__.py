@@ -322,7 +322,7 @@ class rClone(Vault):
         self.write_rclone_private_config(name)
 
         with open(settings.USERS_CONFIG_PATH+'/'+name+'.conf', 'r') as f:
-            return read(f)
+            return f.read()
 
         raise Exception(f"Config: {name} does not exist")
 
