@@ -289,11 +289,11 @@ class rClone(Vault):
         for name in config.sections():
             self.write(name, config[name])
 
-    def write_config(self, mount):
+    def write_rclone_private_config(self, name):
         try:
-            details = self.read(name, secrets=True)
+            details = self.read(mount, secrets=True)
         except:
-            self.stop(name)
+            self.stop(mount)
             return
         
         config = configparser.ConfigParser()
@@ -317,14 +317,14 @@ class rClone(Vault):
         with open(settings.USERS_CONFIG_PATH+'/'+name+'.conf', 'w') as f:
             config.write(f)
 
-    def read_config(self, mount):
+    def read_rclone_private_config(self, name):
 
-        write_config(name)
+        write_rclone_private_config(name)
 
         with open(settings.USERS_CONFIG_PATH+'/'+name+'.conf', 'r') as f:
             return read(f)
 
-        raise Exception(f"Config: {mount} does not exist")
+        raise Exception(f"Config: {name} does not exist")
 
     def md5_mount_filename(self, name):
         return '/usr/local/etc/'+name+'.md5'
@@ -397,7 +397,7 @@ class rClone(Vault):
 
     def start_mount(self, name):
 
-        self.write_config(name)
+        self.write_rclone_private_config(name)
 
         md5_file = self.md5_mount_filename(name)
         md5_new = self.md5_mount_digest(name)

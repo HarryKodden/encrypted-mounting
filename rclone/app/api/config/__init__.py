@@ -54,7 +54,10 @@ class Recover(Resource):
 
             data = {}
             for mount in my_rclone.dump().keys():
-                data[mount] = encrypt(passphrase.encode(), my_rclone.read_config(mount).encode())
+                data[mount] = encrypt(
+                    passphrase.encode(),
+                    my_rclone.read_rclone_private_config(mount).encode()
+                )
 
             return data
         except Exception as e:
@@ -74,7 +77,7 @@ class Recover(Resource):
 
             passphrase = my_rclone.passphrase(me, reset=False)['passphrase']
 
-            return json.loads(decrypt(passphrase.encode(), args['crypted_data']))
+            return decrypt(passphrase.encode(), args['crypted_data'])
         except:
             return {}
 
