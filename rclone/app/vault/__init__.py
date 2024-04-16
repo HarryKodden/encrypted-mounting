@@ -388,11 +388,6 @@ class rClone(Vault):
         except Exception as e:
             log.error("Error remove web config: {}: {}".format(name, str(e)))
 
-        try:
-            os.remove(settings.USERS_CONFIG_PATH+'/'+name+'.conf')
-        except Exception as e:
-            log.error("Error remove config: {}: {}".format(name, str(e)))
-
         self.flush_config()
 
     def start_mount(self, name):
