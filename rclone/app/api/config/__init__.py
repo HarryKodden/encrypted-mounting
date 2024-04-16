@@ -54,9 +54,9 @@ class Recover(Resource):
 
             data = {}
             for mount in my_rclone.dump().keys():
-                data[mount] = my_rclone.read(mount, True)['secrets']
+                data[mount] = encrypt(passphrase.encode(), my_rclone.read_config(mount).encode())
 
-            return encrypt(passphrase.encode(), json.dumps(data).encode())
+            return data
         except Exception as e:
             return str(e), 400
 
