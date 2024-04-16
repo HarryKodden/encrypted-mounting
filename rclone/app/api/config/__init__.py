@@ -5,7 +5,8 @@ import werkzeug
 import uuid
 import json
 
-from flask import request, send_from_directory
+from io import BytesIO
+from flask import request, send_file, send_from_directory
 from flask_restplus import Resource, fields, reqparse
 
 from api import api, token_required, remote_user_required
@@ -55,8 +56,8 @@ class Recover(Resource):
             data = {}
             for mount in my_rclone.dump().keys():
                 config = {
-                    name: mount,
-                    config = my_rclone.read_rclone_private_config(mount).encode()
+                    'name': mount,
+                    'config': my_rclone.read_rclone_private_config(mount).encode()
                 }
 
                 data[mount] = encrypt(
@@ -86,7 +87,7 @@ class Recover(Resource):
                 decrypt(passphrase.encode(), args['crypted_data'])
             )
 
-            return send_from_directory(settings.USERS_CONFIG_PATH, data['name+']+'.conf', as_attachment=True)
+            return send_file(BytesIO(data['config']), download_name=data['name']+'.conf', as_attachment=True )
         except Exception as e:
             return str(e), 401
 
