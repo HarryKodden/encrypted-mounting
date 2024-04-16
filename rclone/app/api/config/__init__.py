@@ -54,9 +54,14 @@ class Recover(Resource):
 
             data = {}
             for mount in my_rclone.dump().keys():
+                config = {
+                    name: mount,
+                    config = my_rclone.read_rclone_private_config(mount).encode()
+                }
+
                 data[mount] = encrypt(
                     passphrase.encode(),
-                    my_rclone.read_rclone_private_config(mount).encode()
+                    json.dumps(config).encode()
                 )
 
             return data
@@ -77,10 +82,13 @@ class Recover(Resource):
 
             passphrase = my_rclone.passphrase(me, reset=False)['passphrase']
 
-            return decrypt(passphrase.encode(), args['crypted_data'])
-        except:
-            return {}
+            data = json.loads(
+                decrypt(passphrase.encode(), args['crypted_data'])
+            )
 
+            return send_from_directory(settings.USERS_CONFIG_PATH, data['name+']+'.conf', as_attachment=True)
+        except Exception as e:
+            return str(e), 401
 
 @ns.route('/passphrase')
 class PassPhrase(Resource):
