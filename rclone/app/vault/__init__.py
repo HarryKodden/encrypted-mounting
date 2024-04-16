@@ -319,7 +319,7 @@ class rClone(Vault):
 
     def read_rclone_private_config(self, name):
 
-        write_rclone_private_config(name)
+        self.write_rclone_private_config(name)
 
         with open(settings.USERS_CONFIG_PATH+'/'+name+'.conf', 'r') as f:
             return read(f)
