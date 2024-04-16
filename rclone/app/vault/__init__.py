@@ -289,6 +289,43 @@ class rClone(Vault):
         for name in config.sections():
             self.write(name, config[name])
 
+    def write_config(self, mount):
+        try:
+            details = self.read(name, secrets=True)
+        except:
+            self.stop(name)
+            return
+        
+        config = configparser.ConfigParser()
+
+        try:
+            secrets = details.pop('secrets', None)
+
+            config[name+'_src'] = details
+
+            config[name] = {
+                'type': 'crypt',
+                'remote': name+'_src:'+secrets['path'], 
+                'password': secrets['pass'],
+                'filename_encryption': 'off',
+                'directory_name_encryption': 'false'
+            }
+        except Exception as e:
+            log.error("Error during config: {}: {}".format(name, str(e)))
+            return
+    
+        with open(settings.USERS_CONFIG_PATH+'/'+name+'.conf', 'w') as f:
+            config.write(f)
+
+    def read_config(self, mount):
+
+        write_config(name)
+
+        with open(settings.USERS_CONFIG_PATH+'/'+name+'.conf', 'r') as f:
+            return read(f)
+
+        raise Exception(f"Config: {mount} does not exist")
+
     def md5_mount_filename(self, name):
         return '/usr/local/etc/'+name+'.md5'
 
@@ -324,19 +361,19 @@ class rClone(Vault):
 
             log.info('Stopping process: {}'.format(pid))
             run(['kill', '{}'.format(pid)])
-        except: 
-            pass
+        except Exception as e:
+            log.error("Error stopping mount: {}: {}".format(name, str(e)))
 
         try:
             os.remove(self.md5_mount_filename(name))
-        except OSError:
-            pass
+        except Exception as e:
+            log.error("Error remove md5 hash: {}: {}".format(name, str(e)))
 
         try:
             os.remove(self.pam_mount_filename(name))
-        except OSError:
-            pass
-        
+        except Exception as e:
+            log.error("Error remove pam config: {}: {}".format(name, str(e)))
+
         try:
             os.remove(self.web_mount_filename(name))
             # make sure pending session are rerouted...
@@ -348,39 +385,19 @@ class rClone(Vault):
                     }}
                     """
                 )
-        except OSError:
-            pass
+        except Exception as e:
+            log.error("Error remove web config: {}: {}".format(name, str(e)))
+
+        try:
+            os.remove(settings.USERS_CONFIG_PATH+'/'+name+'.conf')
+        except Exception as e:
+            log.error("Error remove config: {}: {}".format(name, str(e)))
 
         self.flush_config()
 
     def start_mount(self, name):
 
-        try:
-            details = self.read(name, secrets=True)
-        except:
-            self.stop(name)
-            return
-        
-        config = configparser.ConfigParser()
-
-        try:
-            secrets = details.pop('secrets', None)
-
-            config[name+'_src'] = details
-
-            config[name] = {
-                'type': 'crypt',
-                'remote': name+'_src:'+secrets['path'], 
-                'password': secrets['pass'],
-                'filename_encryption': 'off',
-                'directory_name_encryption': 'false'
-            }
-        except Exception as e:
-            log.error("Error during config: {}: {}".format(name, str(e)))
-            return
-    
-        with open(settings.USERS_CONFIG_PATH+'/'+name+'.conf', 'w') as f:
-            config.write(f)
+        self.write_config(name)
 
         md5_file = self.md5_mount_filename(name)
         md5_new = self.md5_mount_digest(name)
