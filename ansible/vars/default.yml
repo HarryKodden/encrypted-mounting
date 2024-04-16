@@ -4,8 +4,8 @@ log_level: ERROR
 
 sram_urn_prefix: "urn:mace:surf.nl:sram:group"
 
-ADMIN_GROUP: {{ lookup("ansible.builtin.env", "ADMIN_GROUP", default="<undefined>") }}
-USERS_GROUP: {{ lookup("ansible.builtin.env", "USERS_GROUP", default="*") }}
+ADMIN_GROUP: '{{ lookup("ansible.builtin.env", "ADMIN_GROUP", default="<undefined>") }}'
+USERS_GROUP: '{{ lookup("ansible.builtin.env", "USERS_GROUP", default="*") }}'
 
 SRAM_URL: '{{ lookup("ansible.builtin.env", "SRAM_URL", default="https://sram.surf.nl") }}'
 
