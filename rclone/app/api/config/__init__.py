@@ -57,7 +57,7 @@ class Recover(Resource):
             for mount in my_rclone.dump().keys():
                 config = {
                     'name': mount,
-                    'config': my_rclone.read_rclone_private_config(mount).encode()
+                    'config': my_rclone.read_rclone_private_config(mount)
                 }
 
                 data[mount] = encrypt(
@@ -87,7 +87,7 @@ class Recover(Resource):
                 decrypt(passphrase.encode(), args['crypted_data'])
             )
 
-            return send_file(BytesIO(data['config']), download_name=data['name']+'.conf', as_attachment=True )
+            return send_file(BytesIO(data['config'].encode()), download_name=data['name']+'.conf', as_attachment=True )
         except Exception as e:
             return str(e), 401
 
