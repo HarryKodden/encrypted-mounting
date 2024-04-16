@@ -291,9 +291,9 @@ class rClone(Vault):
 
     def write_rclone_private_config(self, name):
         try:
-            details = self.read(mount, secrets=True)
+            details = self.read(name, secrets=True)
         except:
-            self.stop(mount)
+            self.stop(name)
             return
         
         config = configparser.ConfigParser()
