@@ -30,7 +30,7 @@ if ($message != "") {
 
 echo "<h2>Administration</h2>";
 
-echo "You need to be member of the <b>{{ "SRAM_ADMIN_ACCESS_GROUP" }}</b>";
+echo "You need to be member of the <b>{{ ADMIN_GROUP }}</b>";
 
 echo "<ul>";
 foreach (glob("/etc/mounts/*.conf") as $filename) {
