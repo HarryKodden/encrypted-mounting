@@ -50,13 +50,12 @@
   htpasswd:
     path: "{{ traefik_directory }}/htpasswd"
     name: admin
-    password: "{{PROXY_ADMIN_PASSWORD }}"
+    password: "{{ PROXY_ADMIN_PASSWORD }}"
     owner: root
     group: root
     mode: 0640
 
 - name: Start traefik
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ traefik_directory }}"
     state: present
-    build: yes

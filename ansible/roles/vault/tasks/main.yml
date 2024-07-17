@@ -1,12 +1,12 @@
 ---
-- include: install.yml
+- include_tasks: install.yml
 
-- include: configure.yml
+- include_tasks: configure.yml
 
 - name: Stop vault
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ vault_directory }}"
-    stopped: yes
+    state: stopped
   register: output
 
 - name: Delete vault file...
@@ -16,9 +16,9 @@
   when: vault_clean_data
 
 - name: start vault
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ vault_directory }}"
-    restarted: yes
+    state: present
   register: output
 
 - name: Pause for 1 minute to wait for vault to be operational

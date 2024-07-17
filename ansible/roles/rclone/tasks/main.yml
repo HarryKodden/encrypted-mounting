@@ -55,13 +55,12 @@
     dest: "{{ rclone_directory }}/index.php"
 
 - name: Stop rclone
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ rclone_directory }}"
     state: absent
     remove_volumes: yes
 
 - name: Start rclone
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ rclone_directory }}"
     state: present
-    build: yes
