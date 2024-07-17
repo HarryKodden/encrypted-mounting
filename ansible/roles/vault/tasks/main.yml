@@ -80,6 +80,7 @@
 - name: Check Vault health...
   uri:
     url: "https://{{ inventory_hostname }}/v1/sys/health"
+    validate_certs: false
   register: health
 
 - name: Show health...
@@ -93,6 +94,7 @@
     body: "{{ lookup('file','admin-policy.json') }}"
     body_format: json
     status_code: 204
+    validate_certs: false
     headers:
       Content-Type: application/json
       X-Vault-Token: "{{ vault_token }}"
@@ -108,6 +110,7 @@
     body: '{ "password": "{{ admin_password }}", "policies": "admin,default"}'
     body_format: json
     status_code: 204
+    validate_certs: false
     headers:
       Content-Type: application/json
       X-Vault-Token: "{{ vault_token }}"

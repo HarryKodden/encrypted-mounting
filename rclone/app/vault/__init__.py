@@ -232,6 +232,45 @@ class rClone(Vault):
     def dump(self):
         return self.mounts()
 
+    def passphrase(self, admin, reset=False):
+        if (reset):
+
+            payload={ 'passphrase': str(uuid.uuid4()) }
+
+            (rc, _) = self.api(
+                "/v1/secret/data/admin/{}".format(admin), 
+                 method="POST", 
+                payload={ 'data': payload }
+            )
+        else:
+            (rc, data) = self.api(
+                "/v1/secret/data/admin/{}".format(admin), 
+                method='GET'
+            )
+            payload = json.loads(data)['data']['data']
+
+        if rc != 200:
+            raise Exception("status code: {}".format(rc))
+
+        return payload
+
+    def get_passphrases(self):
+        result = {}
+
+        (rc, data) = self.api(
+            "/v1/secret/metadata/admin",
+            method="LIST"
+        )
+
+        if rc == 200:
+            for admin in json.loads(data)['data']['keys']:
+                try:
+                    result[admin] = self.passphrase(admin, reset=False)['passphrase']
+                except:
+                    pass
+
+        return result
+
     def get_config(self, filename):
 
         config = configparser.ConfigParser()
@@ -249,6 +288,43 @@ class rClone(Vault):
 
         for name in config.sections():
             self.write(name, config[name])
+
+    def write_rclone_private_config(self, name):
+        try:
+            details = self.read(name, secrets=True)
+        except:
+            self.stop(name)
+            return
+        
+        config = configparser.ConfigParser()
+
+        try:
+            secrets = details.pop('secrets', None)
+
+            config[name+'_src'] = details
+
+            config[name] = {
+                'type': 'crypt',
+                'remote': name+'_src:'+secrets['path'], 
+                'password': secrets['pass'],
+                'filename_encryption': 'off',
+                'directory_name_encryption': 'false'
+            }
+        except Exception as e:
+            log.error("Error during config: {}: {}".format(name, str(e)))
+            return
+    
+        with open(settings.USERS_CONFIG_PATH+'/'+name+'.conf', 'w') as f:
+            config.write(f)
+
+    def read_rclone_private_config(self, name):
+
+        self.write_rclone_private_config(name)
+
+        with open(settings.USERS_CONFIG_PATH+'/'+name+'.conf', 'r') as f:
+            return f.read()
+
+        raise Exception(f"Config: {name} does not exist")
 
     def md5_mount_filename(self, name):
         return '/usr/local/etc/'+name+'.md5'
@@ -285,19 +361,19 @@ class rClone(Vault):
 
             log.info('Stopping process: {}'.format(pid))
             run(['kill', '{}'.format(pid)])
-        except: 
-            pass
+        except Exception as e:
+            log.error("Error stopping mount: {}: {}".format(name, str(e)))
 
         try:
             os.remove(self.md5_mount_filename(name))
-        except OSError:
-            pass
+        except Exception as e:
+            log.error("Error remove md5 hash: {}: {}".format(name, str(e)))
 
         try:
             os.remove(self.pam_mount_filename(name))
-        except OSError:
-            pass
-        
+        except Exception as e:
+            log.error("Error remove pam config: {}: {}".format(name, str(e)))
+
         try:
             os.remove(self.web_mount_filename(name))
             # make sure pending session are rerouted...
@@ -309,39 +385,14 @@ class rClone(Vault):
                     }}
                     """
                 )
-        except OSError:
-            pass
+        except Exception as e:
+            log.error("Error remove web config: {}: {}".format(name, str(e)))
 
         self.flush_config()
 
     def start_mount(self, name):
 
-        try:
-            details = self.read(name, secrets=True)
-        except:
-            self.stop(name)
-            return
-        
-        config = configparser.ConfigParser()
-
-        try:
-            secrets = details.pop('secrets', None)
-
-            config[name+'_src'] = details
-
-            config[name] = {
-                'type': 'crypt',
-                'remote': name+'_src:'+secrets['path'], 
-                'password': secrets['pass'],
-                'filename_encryption': 'off',
-                'directory_name_encryption': 'false'
-            }
-        except Exception as e:
-            log.error("Error during config: {}: {}".format(name, str(e)))
-            return
-    
-        with open(settings.USERS_CONFIG_PATH+'/'+name+'.conf', 'w') as f:
-            config.write(f)
+        self.write_rclone_private_config(name)
 
         md5_file = self.md5_mount_filename(name)
         md5_new = self.md5_mount_digest(name)

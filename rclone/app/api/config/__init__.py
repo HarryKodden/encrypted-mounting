@@ -3,26 +3,118 @@ import logging
 import settings
 import werkzeug
 import uuid
+import json
 
-from flask import request, send_from_directory
+from io import BytesIO
+from flask import request, send_file, send_from_directory
 from flask_restplus import Resource, fields, reqparse
 
 from api import api, token_required, remote_user_required
 
 from vault import rClone
 
-log = logging.getLogger(__name__)
+from api.config.crypto import encrypt, decrypt
+
+log = logging.getLogger()
 
 ns = api.namespace('config', description='Operations related to services')
 
 my_rclone = rClone()
 
 file_upload = reqparse.RequestParser()
-file_upload.add_argument('rclone_config_file',  
-                         type=werkzeug.datastructures.FileStorage, 
-                         location='files', 
-                         required=True, 
-                         help='Config file')
+file_upload.add_argument(
+        'rclone_config_file',  
+        type=werkzeug.datastructures.FileStorage, 
+        location='files', 
+        required=True, 
+        help='Config file'
+)
+
+crypted_data = reqparse.RequestParser()
+crypted_data.add_argument(
+        'crypted_data',
+        type=str,
+        required=True, 
+        help='enter crypted data'
+)
+
+
+@ns.route('/recover')
+class Recover(Resource):
+
+    def get(self):
+        """
+        Returns crypted configuration.
+        """
+        result = {}
+
+        try:
+            me = request.headers['Remote-User'].replace('"','')
+
+            passphrase = my_rclone.passphrase(me, reset=False)['passphrase']
+
+            data = {}
+            for mount in my_rclone.dump().keys():
+                config = {
+                    'name': mount,
+                    'config': my_rclone.read_rclone_private_config(mount)
+                }
+
+                data[mount] = encrypt(
+                    passphrase.encode(),
+                    json.dumps(config).encode()
+                )
+
+            return data
+        except Exception as e:
+            return str(e), 400
+
+        return result
+
+    @api.expect(crypted_data)
+    def put(self):
+        """
+        Returns decrypted data of given crypted input.
+        """
+        try:
+            args = crypted_data.parse_args()
+
+            me = request.headers['Remote-User'].replace('"','')
+
+            passphrase = my_rclone.passphrase(me, reset=False)['passphrase']
+
+            data = json.loads(
+                decrypt(passphrase.encode(), args['crypted_data'])
+            )
+
+            return send_file(BytesIO(data['config'].encode()), attachment_filename=data['name']+'.conf', as_attachment=True )
+        except Exception as e:
+            return str(e), 401
+
+@ns.route('/passphrase')
+class PassPhrase(Resource):
+
+    def get(self):
+        """
+        Get my passphrase from Vault
+        """
+        try:
+            admin = request.headers['Remote-User'].replace('"', '')
+
+            return my_rclone.passphrase(admin, reset=False)
+        except:
+            return {}
+
+    def put(self):
+        """
+        (Re-)Set my passphrase in Vault
+        """
+        try:
+            admin = request.headers['Remote-User'].replace('"', '')
+
+            return my_rclone.passphrase(admin, reset=True)
+        except:
+            return {}
 
 
 @ns.route('/dump')
@@ -91,6 +183,7 @@ mount_parameters = api.model('mount_parameters', {
     'parameters': fields.Raw(required=True, description='Mount Parameters')
 })
 
+
 @ns.route('/get', methods=['POST'])
 class get(Mount):
 
@@ -117,6 +210,7 @@ class create(Mount):
 
         return super().post(mount, payload={ 'config' : config })
 
+
 @ns.route('/update', methods=['POST'])
 class update(Mount):
 
@@ -131,6 +225,7 @@ class update(Mount):
 
         return super().post(mount, payload={ 'config' : config })
 
+
 @ns.route('/delete', methods=['POST'])
 class delete(Mount):
 
@@ -142,6 +237,7 @@ class delete(Mount):
 
         return self.delete(api.payload['name'])
 
+
 @ns.route('/listremotes',methods=['POST'])
 class ListRemotes(Config):
 
@@ -150,6 +246,7 @@ class ListRemotes(Config):
         list remotes
         """
         return { "remotes": list(super().post().keys()) }
+
 
 @ns.route('/export',methods=['GET'])
 class Export(Config):
@@ -168,6 +265,7 @@ class Export(Config):
             return str(e), 401
         finally:
             os.remove(dir+'/'+file)
+
 
 @ns.route('/import', methods=['POST'])
 class Import(ListRemotes):

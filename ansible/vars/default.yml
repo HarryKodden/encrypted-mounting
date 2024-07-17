@@ -2,15 +2,20 @@
 admin_username: admin
 log_level: ERROR
 
+sram_urn_prefix: "urn:mace:surf.nl:sram:group"
+
+ADMIN_GROUP: '{{ lookup("ansible.builtin.env", "ADMIN_GROUP", default="<undefined>") }}'
+USERS_GROUP: '{{ lookup("ansible.builtin.env", "USERS_GROUP", default="*") }}'
+
 SRAM_URL: '{{ lookup("ansible.builtin.env", "SRAM_URL", default="https://sram.surf.nl") }}'
 
 SRAM_OIDC_BASE_URL: '{{ lookup("ansible.builtin.env", "SRAM_OIDC_BASE_URL", default="https://proxy.sram.surf.nl") }}'
 SRAM_OIDC_CLIENT_ID: '{{ lookup("ansible.builtin.env", "SRAM_OIDC_CLIENT_ID", default="<undefined>") }}'
 SRAM_OIDC_CLIENT_SECRET: '{{ lookup("ansible.builtin.env", "SRAM_OIDC_CLIENT_SECRET", default="<undefined>") }}'
 
-SRAM_ADMIN_ACCESS_GROUP: '{{ lookup("ansible.builtin.env", "SRAM_ADMIN_ACCESS_GROUP", default="urn:mace:surf.nl:sram:group:...") }}'
 SRAM_SERVICE_BEARER_TOKEN: '{{ lookup("ansible.builtin.env", "SRAM_SERVICE_BEARER_TOKEN", default="<undefined>") }}'
 
 PROXY_ADMIN_PASSWORD: '{{ lookup("ansible.builtin.env", "PROXY_ADMIN_PASSWORD", default="admin") }}'
 
-PAM_VALIDATE_USERS_ENTITLEMENT: "lambda mount: 'urn:mace:surf.nl:sram:group:{}'.format(mount.replace('-',':'))"
+SRAM_ADMIN_ACCESS_GROUP: '{{ sram_urn_prefix }}:{{ ADMIN_GROUP }}'
+PAM_VALIDATE_USERS_ENTITLEMENT: '{{ sram_urn_prefix }}:{{ USERS_GROUP }}'

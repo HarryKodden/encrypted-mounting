@@ -1,0 +1,47 @@
+<?php
+echo "<h1>Research Vault</h1>";
+
+echo "<a href=\"{{ surf_research_vault_documentation }}\">Research Vault documentation</a><br/>";
+
+echo "<h2>Research Vault server addresses</h2>";
+
+$message = "No addresses configured yet. Administrator needs to do that first.";
+
+echo "<ul>";
+foreach (glob("/etc/mounts/*.conf") as $filename) {
+	$path = basename($filename, ".conf");
+
+	if ($path != "admin") {
+		$message = "";
+
+		$path = "webdav/" . $path;
+
+		echo "<li>'<a href=\"" . $_SERVER['url'] . "/" . $path . "\">" . $path . "'</a></li>";
+	}
+}
+echo "</ul>";
+
+if ($message != "") {
+	echo $message;
+} else {
+	echo "<h2>Authentication</h2>";
+	echo "Authenticate with your SRAM User ID and your SRAM Token that you have registered for this SRAM Service";
+}
+
+echo "<h2>Administration</h2>";
+
+echo "You need to be member of the <b>{{ ADMIN_GROUP }}</b>";
+
+echo "<ul>";
+foreach (glob("/etc/mounts/*.conf") as $filename) {
+	$path = basename($filename, ".conf");
+	if ($path == "admin") {
+		$description = "Administration page";
+		echo "<li>rClone GUI <a href=\"" . $_SERVER['url'] . "/" . $path . "\">" . $description . "</a></li>";
+		echo "<li>rClone API <a href=\"" . $_SERVER['url'] . "/" . $path . "/api/doc\">" . $description . " (API Documentation)</a></li>";
+	}
+}
+echo "</ul>";
+
+// phpinfo();
+?>
