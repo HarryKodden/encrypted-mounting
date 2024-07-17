@@ -56,7 +56,6 @@
     mode: 0640
 
 - name: Start traefik
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ traefik_directory }}"
     state: present
-    build: yes
