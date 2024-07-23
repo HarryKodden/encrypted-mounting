@@ -20,11 +20,6 @@
     name: gnupg
     update_cache: yes
 
-- name: install jmespath
-  apt:
-    name: python3-jmespath
-    update_cache: yes
-
 - name: set login banner
   copy:
     src: issue
