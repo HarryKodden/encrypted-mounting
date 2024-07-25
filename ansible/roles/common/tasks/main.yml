@@ -1,4 +1,18 @@
 ---
+- name: debug parameters...
+  ansible.builtin.debug:
+    msg:
+      - "SRAM_URL: {{ SRAM_URL }}"
+      - "SRAM_OIDC_BASE_URL: {{ SRAM_OIDC_BASE_URL }}"
+      - "SRAM_OIDC_CLIENT_ID: {{ SRAM_OIDC_CLIENT_ID }}"
+      - "SRAM_OIDC_CLIENT_SECRET: {{ SRAM_OIDC_CLIENT_SECRET | regex_replace('(.{5}).*', '\\1*****') }}"
+      - "SRAM_SERVICE_BEARER_TOKEN: {{ SRAM_SERVICE_BEARER_TOKEN | regex_replace('(.{5}).*', '\\1*****')}}"
+      - "PROXY_ADMIN_PASSWORD: {{ PROXY_ADMIN_PASSWORD | regex_replace('(.{5}).*', '\\1*****')}}"
+      - "SRAM_ADMIN_ACCESS_GROUP: {{ ADMIN_GROUP }}"
+      - "PAM_VALIDATE_USERS_ENTITLEMENT: {{ PAM_VALIDATE_USERS_ENTITLEMENT }}"
+      - "ADMIN_GROUP: {{ ADMIN_GROUP }}"
+      - "USERS_GROUP: {{ USERS_GROUP }}"
+
 - name: Install aptitude using apt
   apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
 
